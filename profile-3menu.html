@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 - 移动充电</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* iPhone 外框 */
+        .iphone-frame {
+            width: 393px;
+            height: 852px;
+            background: #1a1a1a;
+            border-radius: 55px;
+            padding: 12px;
+            box-shadow:
+                0 0 0 2px #2a2a2a,
+                0 0 0 8px #1a1a1a,
+                0 30px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: scale(1.1);
+        }
+
+        @media (max-height: 1000px) { .iphone-frame { transform: scale(0.95); } }
+        @media (max-height: 900px) { .iphone-frame { transform: scale(0.85); } }
+        @media (max-height: 800px) { .iphone-frame { transform: scale(0.75); } }
+
+        /* 灵动岛 */
+        .dynamic-island {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 126px;
+            height: 37px;
+            background: #000;
+            border-radius: 22px;
+            z-index: 10;
+        }
+
+        /* 屏幕内容 */
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 45px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            height: 54px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 20px;
+            padding-top: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .time {
+            font-weight: 600;
+            position: absolute;
+            left: 35px;
+            top: 18px;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            position: absolute;
+            right: 35px;
+            top: 18px;
+        }
+
+        /* 信号图标 */
+        .signal {
+            display: flex;
+            gap: 1px;
+            align-items: flex-end;
+            height: 12px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 6px; }
+        .signal-bar:nth-child(3) { height: 8px; }
+        .signal-bar:nth-child(4) { height: 10px; }
+
+        /* WiFi 图标 */
+        .wifi {
+            width: 15px;
+            height: 11px;
+            position: relative;
+        }
+
+        .wifi::before {
+            content: '◗';
+            font-size: 15px;
+            color: #000;
+            transform: rotate(45deg);
+            display: block;
+        }
+
+        /* 电池图标 */
+        .battery {
+            width: 24px;
+            height: 11px;
+            border: 1.5px solid #000;
+            border-radius: 3px;
+            position: relative;
+            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+        }
+
+        .battery::before {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.5px;
+            height: 4px;
+            background: #000;
+            border-radius: 0 1px 1px 0;
+        }
+
+        .battery::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 16px 110px 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 隐藏滚动条 */
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .main-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 顶部标题 */
+        .page-header {
+            padding: 16px 0 24px;
+        }
+
+        .page-title {
+            font-size: 34px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        /* 菜单列表 */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* 菜单卡片容器 */
+        .menu-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .menu-item {
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 60px;
+            border-bottom: 0.5px solid #E5E5EA;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:active {
+            background: #F5F5F5;
+        }
+
+        .menu-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            flex: 1;
+        }
+
+        .menu-icon {
+            width: 36px;
+            height: 36px;
+            background: #F5F5F5;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: #000;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .menu-label {
+            font-size: 17px;
+            font-weight: 400;
+            color: #000;
+        }
+
+        .menu-arrow {
+            font-size: 20px;
+            color: #C7C7CC;
+            padding-right: 16px;
+            font-weight: 300;
+        }
+
+        .menu-value {
+            font-size: 16px;
+            color: #8E8E93;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-right: 16px;
+        }
+
+        .menu-value::after {
+            content: '›';
+            font-size: 20px;
+            color: #C7C7CC;
+            font-weight: 300;
+        }
+
+        /* 退出连接样式 */
+        .disconnect-item .menu-icon {
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .disconnect-item .menu-icon svg {
+            stroke: #FF3B30;
+        }
+
+        .disconnect-label {
+            color: #FF3B30 !important;
+        }
+
+        /* 确认对话框 */
+        .confirm-dialog-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            animation: fadeIn 0.2s ease;
+            border-radius: 45px;
+        }
+
+        .confirm-dialog-overlay.show {
+            display: flex;
+        }
+
+        .confirm-dialog {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 14px;
+            width: 270px;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .dialog-content {
+            padding: 20px 16px;
+            text-align: center;
+        }
+
+        .dialog-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .dialog-message {
+            font-size: 13px;
+            color: #8E8E93;
+            line-height: 1.4;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dialog-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .dialog-btn:active {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .dialog-btn-cancel {
+            color: #0052CC;
+            font-weight: 400;
+            border-right: 0.5px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dialog-btn-destructive {
+            color: #FF3B30;
+            font-weight: 600;
+        }
+
+        /* 遮罩层 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 200;
+            border-radius: 45px;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 底部抽屉 */
+        .drawer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 20px 20px 45px 45px;
+            padding: 20px 20px 30px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 201;
+            max-height: 50%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .drawer.active {
+            transform: translateY(0);
+        }
+
+        /* 隐藏抽屉滚动条 */
+        .drawer::-webkit-scrollbar {
+            display: none;
+        }
+
+        .drawer {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+
+        .drawer-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .drawer-close {
+            width: 28px;
+            height: 28px;
+            background: #F2F2F7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #8E8E93;
+            transition: all 0.2s ease;
+        }
+
+        .drawer-close:active {
+            transform: scale(0.9);
+            background: #E5E5EA;
+        }
+
+        .drawer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .drawer-option {
+            padding: 16px 20px;
+            font-size: 16px;
+            color: #000;
+            border-bottom: 0.5px solid #E5E5EA;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-option:last-child {
+            border-bottom: none;
+        }
+
+        .drawer-option:active {
+            background: #F2F2F7;
+        }
+
+        .drawer-option.selected {
+            color: #000;
+            font-weight: 600;
+            background: #F5F5F5;
+        }
+
+        .drawer-option.selected::after {
+            content: '✓';
+            font-size: 18px;
+            color: #000;
+        }
+
+        /* 隐私协议抽屉 */
+        .privacy-drawer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 20px 20px 45px 45px;
+            padding: 0;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 201;
+            max-height: 75%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .privacy-drawer.active {
+            transform: translateY(0);
+        }
+
+        .privacy-drawer .drawer-header {
+            padding: 20px;
+            border-bottom: 1px solid #E5E5EA;
+            flex-shrink: 0;
+        }
+
+        .privacy-content {
+            flex: 1;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding: 20px;
+            line-height: 1.6;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 隐藏隐私协议滚动条 */
+        .privacy-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .privacy-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .privacy-content h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+
+        .privacy-content h2:first-child {
+            margin-top: 0;
+        }
+
+        .privacy-content p {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .privacy-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .privacy-content li {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        /* 同意按钮 */
+        .privacy-footer {
+            padding: 15px 20px 25px;
+            border-top: 1px solid #E5E5EA;
+            flex-shrink: 0;
+        }
+
+        .agree-btn {
+            width: 100%;
+            height: 48px;
+            background: #0052CC;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .agree-btn:active {
+            transform: scale(0.98);
+            background: #003B99;
+        }
+
+        /* 底部菜单栏 */
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 22px;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 16px;
+            position: absolute;
+            bottom: 25px;
+            left: 16px;
+            right: 16px;
+            height: 70px;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            flex: 1;
+        }
+
+        .nav-item:active {
+            transform: scale(0.88);
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .nav-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: #8E8E93;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.25s ease;
+        }
+
+        .nav-item.active .nav-icon svg {
+            stroke: #0052CC;
+            stroke-width: 2;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: #8E8E93;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .nav-item.active .nav-label {
+            color: #0052CC;
+            font-weight: 600;
+        }
+
+        /* 底部指示条 */
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 5px;
+            background: #000;
+            border-radius: 3px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-frame">
+        <!-- 灵动岛 -->
+        <div class="dynamic-island"></div>
+
+        <!-- 屏幕内容 -->
+        <div class="screen">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="time">9:41</div>
+                <div class="status-icons">
+                    <div class="signal">
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                    </div>
+                    <div class="wifi"></div>
+                    <div class="battery"></div>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="main-content">
+                <!-- 顶部标题 -->
+                <div class="page-header">
+                    <h1 class="page-title">我的</h1>
+                </div>
+
+                <!-- 菜单列表 -->
+                <div class="menu-list">
+                    <div class="menu-card">
+                        <div class="menu-item" id="languageSwitch">
+                            <div class="menu-item-left">
+                                <div class="menu-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                    </svg>
+                                </div>
+                                <div class="menu-label">语言切换</div>
+                            </div>
+                            <div class="menu-value">English</div>
+                        </div>
+                        <div class="menu-item" id="privacyItem">
+                            <div class="menu-item-left">
+                                <div class="menu-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <rect x="5" y="11" width="14" height="10" rx="2" />
+                                        <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+                                        <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                                    </svg>
+                                </div>
+                                <div class="menu-label">隐私协议</div>
+                            </div>
+                            <div class="menu-arrow">›</div>
+                        </div>
+                    </div>
+
+                    <!-- 退出连接卡片 -->
+                    <div class="menu-card">
+                        <div class="menu-item disconnect-item" id="disconnectItem">
+                            <div class="menu-item-left">
+                                <div class="menu-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                        <polyline points="16 17 21 12 16 7"/>
+                                        <line x1="21" y1="12" x2="9" y2="12"/>
+                                    </svg>
+                                </div>
+                                <div class="menu-label disconnect-label">退出连接</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部菜单栏 -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="navigateTo('search')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">充电桩</div>
+                </div>
+                <div class="nav-item" onclick="navigateTo('record')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">记录</div>
+                </div>
+                <div class="nav-item active">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="5"/>
+                            <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">我的</div>
+                </div>
+            </div>
+
+            <!-- 底部指示条 -->
+            <div class="home-indicator"></div>
+
+            <!-- 遮罩层 -->
+            <div class="overlay" id="overlay"></div>
+
+            <!-- 语言切换抽屉 -->
+            <div class="drawer" id="languageDrawer">
+                <div class="drawer-header">
+                    <div class="drawer-title" id="languageDrawerTitle">选择语言</div>
+                    <div class="drawer-close" id="drawerClose">×</div>
+                </div>
+                <div class="drawer-options">
+                    <div class="drawer-option selected" data-lang="中文">简体中文</div>
+                    <div class="drawer-option" data-lang="繁體中文">繁體中文</div>
+                    <div class="drawer-option" data-lang="English">English</div>
+                </div>
+            </div>
+
+            <!-- 确认对话框 -->
+            <div class="confirm-dialog-overlay" id="confirmDialog">
+                <div class="confirm-dialog">
+                    <div class="dialog-content">
+                        <div class="dialog-title">退出连接</div>
+                        <div class="dialog-message">确定要退出连接并返回首页吗?</div>
+                    </div>
+                    <div class="dialog-buttons">
+                        <button class="dialog-btn dialog-btn-cancel" onclick="hideConfirmDialog()">取消</button>
+                        <button class="dialog-btn dialog-btn-destructive" onclick="confirmDisconnect()">退出</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 隐私协议抽屉 -->
+            <div class="privacy-drawer" id="privacyDrawer">
+                <div class="drawer-header">
+                    <div class="drawer-title" id="privacyDrawerTitle">隐私协议</div>
+                </div>
+                <div class="privacy-content" id="privacyContent">
+                    <!-- 内容将通过JavaScript动态加载 -->
+                </div>
+                <div class="privacy-footer">
+                    <button class="agree-btn" id="agreeBtn">我已同意</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言配置
+        const i18n = {
+            '中文': {
+                pageTitle: '我的',
+                languageSwitch: '语言切换',
+                privacyPolicy: '隐私协议',
+                disconnect: '退出连接',
+                navSearch: '充电桩',
+                navRecord: '记录',
+                navMe: '我的',
+                selectLanguage: '选择语言',
+                agreeBtn: '我已同意',
+                disconnectTitle: '退出连接',
+                disconnectMsg: '确定要退出连接并返回首页吗?',
+                cancel: '取消',
+                disconnectBtn: '退出',
+                privacyContent: `
+                    <h2>隐私政策</h2>
+                    <p>更新日期：2025年10月30日</p>
+                    <p>生效日期：2025年10月30日</p>
+
+                    <h2>1. 信息收集</h2>
+                    <p>我们可能会收集以下类型的信息：</p>
+                    <ul>
+                        <li>设备信息：包括设备型号、操作系统版本等</li>
+                        <li>位置信息：用于快速连接设备和识别定位</li>
+                        <li>蓝牙信息：用于连接充电设备</li>
+                        <li>使用数据：充电记录、使用时长等</li>
+                    </ul>
+
+                    <h2>2. 信息使用</h2>
+                    <p>我们收集的信息将用于：</p>
+                    <ul>
+                        <li>提供和改进我们的服务</li>
+                        <li>连接和管理充电设备</li>
+                        <li>分析使用情况以优化用户体验</li>
+                        <li>发送重要通知和更新</li>
+                    </ul>
+
+                    <h2>3. 信息共享</h2>
+                    <p>我们不会向第三方出售、交易或转让您的个人信息，除非：</p>
+                    <ul>
+                        <li>获得您的明确同意</li>
+                        <li>法律要求或保护我们的权利</li>
+                        <li>与可信赖的服务提供商合作</li>
+                    </ul>
+
+                    <h2>4. 数据安全</h2>
+                    <p>我们采取适当的技术和组织措施来保护您的个人信息，防止未经授权的访问、披露或破坏。</p>
+
+                    <h2>5. 您的权利</h2>
+                    <p>您有权：</p>
+                    <ul>
+                        <li>访问和更新您的个人信息</li>
+                        <li>删除您的账户和数据</li>
+                        <li>选择退出某些数据收集</li>
+                        <li>随时撤回同意</li>
+                    </ul>
+
+                    <h2>6. 联系我们</h2>
+                    <p>如果您对本隐私政策有任何疑问，请通过以下方式联系我们：</p>
+                    <p>邮箱：privacy@mobilecharge.com</p>
+                `
+            },
+            '繁體中文': {
+                pageTitle: '我的',
+                languageSwitch: '語言切換',
+                privacyPolicy: '隱私協議',
+                disconnect: '退出連接',
+                navSearch: '充電樁',
+                navRecord: '記錄',
+                navMe: '我的',
+                selectLanguage: '選擇語言',
+                agreeBtn: '我已同意',
+                disconnectTitle: '退出連接',
+                disconnectMsg: '確定要退出連接並返回首頁嗎?',
+                cancel: '取消',
+                disconnectBtn: '退出',
+                privacyContent: `
+                    <h2>隱私政策</h2>
+                    <p>更新日期：2025年10月30日</p>
+                    <p>生效日期：2025年10月30日</p>
+
+                    <h2>1. 信息收集</h2>
+                    <p>我們可能會收集以下類型的信息：</p>
+                    <ul>
+                        <li>設備信息：包括設備型號、操作系統版本等</li>
+                        <li>位置信息：用於快速連接設備和識別定位</li>
+                        <li>藍牙信息：用於連接充電設備</li>
+                        <li>使用數據：充電記錄、使用時長等</li>
+                    </ul>
+
+                    <h2>2. 信息使用</h2>
+                    <p>我們收集的信息將用於：</p>
+                    <ul>
+                        <li>提供和改進我們的服務</li>
+                        <li>連接和管理充電設備</li>
+                        <li>分析使用情況以優化用戶體驗</li>
+                        <li>發送重要通知和更新</li>
+                    </ul>
+
+                    <h2>3. 信息共享</h2>
+                    <p>我們不會向第三方出售、交易或轉讓您的個人信息，除非：</p>
+                    <ul>
+                        <li>獲得您的明確同意</li>
+                        <li>法律要求或保護我們的權利</li>
+                        <li>與可信賴的服務提供商合作</li>
+                    </ul>
+
+                    <h2>4. 數據安全</h2>
+                    <p>我們採取適當的技術和組織措施來保護您的個人信息，防止未經授權的訪問、披露或破壞。</p>
+
+                    <h2>5. 您的權利</h2>
+                    <p>您有權：</p>
+                    <ul>
+                        <li>訪問和更新您的個人信息</li>
+                        <li>刪除您的賬戶和數據</li>
+                        <li>選擇退出某些數據收集</li>
+                        <li>隨時撤回同意</li>
+                    </ul>
+
+                    <h2>6. 聯繫我們</h2>
+                    <p>如果您對本隱私政策有任何疑問，請通過以下方式聯繫我們：</p>
+                    <p>郵箱：privacy@mobilecharge.com</p>
+                `
+            },
+            'English': {
+                pageTitle: 'Me',
+                languageSwitch: 'Language',
+                privacyPolicy: 'Privacy Policy',
+                disconnect: 'Disconnect',
+                navSearch: 'Chargers',
+                navRecord: 'Records',
+                navMe: 'Me',
+                selectLanguage: 'Select Language',
+                agreeBtn: 'I Agree',
+                disconnectTitle: 'Disconnect',
+                disconnectMsg: 'Are you sure you want to disconnect and return to home?',
+                cancel: 'Cancel',
+                disconnectBtn: 'Disconnect',
+                privacyContent: `
+                    <h2>Privacy Policy</h2>
+                    <p>Last Updated: October 30, 2025</p>
+                    <p>Effective Date: October 30, 2025</p>
+
+                    <h2>1. Information Collection</h2>
+                    <p>We may collect the following types of information:</p>
+                    <ul>
+                        <li>Device Information: Including device model, operating system version, etc.</li>
+                        <li>Location Information: Used to quickly connect devices and identify location</li>
+                        <li>Bluetooth Information: Used to connect charging devices</li>
+                        <li>Usage Data: Charging records, usage duration, etc.</li>
+                    </ul>
+
+                    <h2>2. Information Use</h2>
+                    <p>The information we collect will be used to:</p>
+                    <ul>
+                        <li>Provide and improve our services</li>
+                        <li>Connect and manage charging devices</li>
+                        <li>Analyze usage to optimize user experience</li>
+                        <li>Send important notifications and updates</li>
+                    </ul>
+
+                    <h2>3. Information Sharing</h2>
+                    <p>We do not sell, trade, or transfer your personal information to third parties, except:</p>
+                    <ul>
+                        <li>With your explicit consent</li>
+                        <li>As required by law or to protect our rights</li>
+                        <li>In collaboration with trusted service providers</li>
+                    </ul>
+
+                    <h2>4. Data Security</h2>
+                    <p>We take appropriate technical and organizational measures to protect your personal information from unauthorized access, disclosure, or destruction.</p>
+
+                    <h2>5. Your Rights</h2>
+                    <p>You have the right to:</p>
+                    <ul>
+                        <li>Access and update your personal information</li>
+                        <li>Delete your account and data</li>
+                        <li>Opt out of certain data collection</li>
+                        <li>Withdraw consent at any time</li>
+                    </ul>
+
+                    <h2>6. Contact Us</h2>
+                    <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+                    <p>Email: privacy@mobilecharge.com</p>
+                `
+            }
+        };
+
+        // 更新界面语言
+        function updateLanguage(lang) {
+            const texts = i18n[lang];
+            if (!texts) return;
+
+            // 更新页面标题
+            document.querySelector('.page-title').textContent = texts.pageTitle;
+
+            // 更新菜单标签
+            const menuLabels = document.querySelectorAll('.menu-label');
+            menuLabels[0].textContent = texts.languageSwitch;
+            menuLabels[1].textContent = texts.privacyPolicy;
+            menuLabels[2].textContent = texts.disconnect;
+
+            // 更新导航标签
+            const navLabels = document.querySelectorAll('.nav-label');
+            navLabels[0].textContent = texts.navSearch;
+            navLabels[1].textContent = texts.navRecord;
+            navLabels[2].textContent = texts.navMe;
+
+            // 更新抽屉标题
+            document.getElementById('languageDrawerTitle').textContent = texts.selectLanguage;
+            document.getElementById('privacyDrawerTitle').textContent = texts.privacyPolicy;
+
+            // 更新同意按钮
+            document.getElementById('agreeBtn').textContent = texts.agreeBtn;
+
+            // 更新对话框
+            const dialogTitle = document.querySelector('.dialog-title');
+            const dialogMessage = document.querySelector('.dialog-message');
+            const cancelBtn = document.querySelector('.dialog-btn-cancel');
+            const disconnectBtn = document.querySelector('.dialog-btn-destructive');
+
+            if (dialogTitle) dialogTitle.textContent = texts.disconnectTitle;
+            if (dialogMessage) dialogMessage.textContent = texts.disconnectMsg;
+            if (cancelBtn) cancelBtn.textContent = texts.cancel;
+            if (disconnectBtn) disconnectBtn.textContent = texts.disconnectBtn;
+        }
+
+        // 语言切换抽屉功能
+        const languageSwitch = document.getElementById('languageSwitch');
+        const languageDrawer = document.getElementById('languageDrawer');
+        const overlay = document.getElementById('overlay');
+        const drawerClose = document.getElementById('drawerClose');
+        const drawerOptions = document.querySelectorAll('.drawer-option');
+
+        // 打开语言切换抽屉
+        languageSwitch.addEventListener('click', function() {
+            languageDrawer.classList.add('active');
+            overlay.classList.add('active');
+        });
+
+        // 关闭语言切换抽屉
+        function closeDrawer() {
+            languageDrawer.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        drawerClose.addEventListener('click', closeDrawer);
+
+        // 选择语言
+        drawerOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // 移除所有选中状态
+                drawerOptions.forEach(opt => opt.classList.remove('selected'));
+
+                // 添加当前选中状态
+                this.classList.add('selected');
+
+                // 更新显示的语言
+                const selectedLang = this.getAttribute('data-lang');
+                languageSwitch.querySelector('.menu-value').textContent = selectedLang;
+
+                // 更新界面语言
+                updateLanguage(selectedLang);
+
+                // 保存语言偏好到本地存储
+                localStorage.setItem('preferredLanguage', selectedLang);
+
+                // 关闭抽屉
+                closeDrawer();
+            });
+        });
+
+        // 页面加载时恢复语言设置
+        const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
+        if (savedLanguage !== '中文') {
+            updateLanguage(savedLanguage);
+            languageSwitch.querySelector('.menu-value').textContent = savedLanguage;
+            // 更新抽屉中的选中状态
+            drawerOptions.forEach(opt => {
+                if (opt.getAttribute('data-lang') === savedLanguage) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+
+        // 隐私协议抽屉功能
+        const privacyItem = document.getElementById('privacyItem');
+        const privacyDrawer = document.getElementById('privacyDrawer');
+        const privacyContent = document.getElementById('privacyContent');
+        const agreeBtn = document.getElementById('agreeBtn');
+
+        // 加载隐私协议内容
+        function loadPrivacyContent() {
+            const currentLang = localStorage.getItem('preferredLanguage') || '中文';
+            const texts = i18n[currentLang];
+            if (texts && texts.privacyContent) {
+                privacyContent.innerHTML = texts.privacyContent;
+            }
+        }
+
+        // 打开隐私协议抽屉
+        privacyItem.addEventListener('click', function() {
+            loadPrivacyContent(); // 加载对应语言的内容
+            privacyDrawer.classList.add('active');
+            overlay.classList.add('active');
+        });
+
+        // 关闭隐私协议抽屉
+        function closePrivacyDrawer() {
+            privacyDrawer.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        // 点击遮罩关闭抽屉
+        overlay.addEventListener('click', function() {
+            closeDrawer();
+            closePrivacyDrawer();
+        });
+
+        // 同意按钮功能
+        agreeBtn.addEventListener('click', function() {
+            localStorage.setItem('privacyAgreed', 'true');
+            closePrivacyDrawer();
+        });
+
+        // 退出连接功能
+        const disconnectItem = document.getElementById('disconnectItem');
+        const confirmDialog = document.getElementById('confirmDialog');
+
+        // 显示退出连接确认对话框
+        disconnectItem.addEventListener('click', function() {
+            confirmDialog.classList.add('show');
+        });
+
+        // 隐藏确认对话框
+        function hideConfirmDialog() {
+            confirmDialog.classList.remove('show');
+        }
+
+        // 确认退出连接
+        function confirmDisconnect() {
+            // 跳转到首页
+            window.location.href = 'home.html';
+        }
+
+        // 底部导航跳转函数
+        function navigateTo(page) {
+            if (page === 'me') {
+                return; // 当前页面，不跳转
+            } else if (page === 'search') {
+                window.location.href = 'search.html';
+            } else if (page === 'record') {
+                window.location.href = 'records.html';
+            }
+        }
+    </script>
+</body>
+</html>

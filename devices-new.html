@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备 - 移动充电</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* iPhone 外框 */
+        .iphone-frame {
+            width: 393px;
+            height: 852px;
+            background: #1a1a1a;
+            border-radius: 55px;
+            padding: 12px;
+            box-shadow:
+                0 0 0 2px #2a2a2a,
+                0 0 0 8px #1a1a1a,
+                0 30px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: scale(1.1);
+        }
+
+        @media (max-height: 1000px) { .iphone-frame { transform: scale(0.95); } }
+        @media (max-height: 900px) { .iphone-frame { transform: scale(0.85); } }
+        @media (max-height: 800px) { .iphone-frame { transform: scale(0.75); } }
+
+        /* 灵动岛 */
+        .dynamic-island {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 126px;
+            height: 37px;
+            background: #000;
+            border-radius: 22px;
+            z-index: 10;
+        }
+
+        /* 屏幕内容 */
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 45px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            height: 54px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 20px;
+            padding-top: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .time {
+            font-weight: 600;
+            position: absolute;
+            left: 35px;
+            top: 18px;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            position: absolute;
+            right: 35px;
+            top: 18px;
+        }
+
+        /* 信号图标 */
+        .signal {
+            display: flex;
+            gap: 1px;
+            align-items: flex-end;
+            height: 12px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 6px; }
+        .signal-bar:nth-child(3) { height: 8px; }
+        .signal-bar:nth-child(4) { height: 10px; }
+
+        /* WiFi 图标 */
+        .wifi {
+            width: 15px;
+            height: 11px;
+            position: relative;
+        }
+
+        .wifi::before {
+            content: '◗';
+            font-size: 15px;
+            color: #000;
+            transform: rotate(45deg);
+            display: block;
+        }
+
+        /* 电池图标 */
+        .battery {
+            width: 24px;
+            height: 11px;
+            border: 1.5px solid #000;
+            border-radius: 3px;
+            position: relative;
+            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+        }
+
+        .battery::before {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.5px;
+            height: 4px;
+            background: #000;
+            border-radius: 0 1px 1px 0;
+        }
+
+        .battery::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            padding-bottom: 110px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .main-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 设备页面 */
+        .device-page {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .initial-view {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .device-header {
+            font-size: 28px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .connect-btn {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #0052CC 0%, #003B99 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 8px 24px rgba(0, 82, 204, 0.3);
+        }
+
+        .connect-btn:active {
+            transform: translate(-50%, -50%) scale(0.95);
+            background: linear-gradient(135deg, #003B99 0%, #002B75 100%);
+        }
+
+        .connect-btn svg {
+            width: 48px;
+            height: 48px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* 扫描视图 */
+        .scanning-view {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0 16px 20px 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scanning-view.active {
+            display: block;
+        }
+
+        .scanning-view::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scanning-view {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scanning-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            margin-left: -8px;
+            margin-right: -8px;
+        }
+
+        .scanning-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            flex: 1;
+            text-align: center;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            margin: 0;
+        }
+
+        .back-btn:active {
+            transform: scale(0.9);
+            opacity: 0.6;
+        }
+
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: #0052CC;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        #refreshBtn.refreshing svg {
+            animation: rotate 1s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 雷达扫描 */
+        .radar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 32px 0 16px;
+            margin-bottom: 12px;
+        }
+
+        .radar-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .radar-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 82, 204, 0.2);
+        }
+
+        .radar-circle:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            background: rgba(0, 82, 204, 0.03);
+            animation: radarPulse 3s ease-out infinite;
+        }
+
+        .radar-circle:nth-child(2) {
+            width: 160px;
+            height: 160px;
+            background: rgba(0, 82, 204, 0.05);
+            animation: radarPulse 3s ease-out infinite 0.5s;
+        }
+
+        .radar-circle:nth-child(3) {
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 82, 204, 0.08);
+            animation: radarPulse 3s ease-out infinite 1s;
+        }
+
+        .radar-circle:nth-child(4) {
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 82, 204, 0.12);
+            animation: radarPulse 3s ease-out infinite 1.5s;
+        }
+
+        @keyframes radarPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.6;
+            }
+        }
+
+        .bluetooth-icon-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #0052CC 0%, #003B99 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+        }
+
+        .bluetooth-icon-wrapper svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        .radar-scanning-text {
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            color: #8E8E93;
+        }
+
+        .device-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .device-list.hidden {
+            display: none;
+        }
+
+        .device-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .device-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .device-card:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+
+        .device-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .device-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 0;
+        }
+
+        .connect-device-btn {
+            background: #0052CC;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .connect-device-btn:active {
+            transform: scale(0.95);
+            background: #003B99;
+        }
+
+        /* 遮罩层 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 200;
+            border-radius: 45px;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 底部菜单栏 */
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 22px;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 16px;
+            position: absolute;
+            bottom: 25px;
+            left: 16px;
+            right: 16px;
+            height: 70px;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            flex: 1;
+        }
+
+        .nav-item:active {
+            transform: scale(0.88);
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .nav-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: #8E8E93;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.25s ease;
+        }
+
+        .nav-item.active .nav-icon svg {
+            stroke: #0052CC;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: #8E8E93;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .nav-item.active .nav-label {
+            color: #0052CC;
+            font-weight: 600;
+        }
+
+        /* 底部指示条 */
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 5px;
+            background: #000;
+            border-radius: 3px;
+            opacity: 0.3;
+        }
+
+        /* 系统弹窗 */
+        .system-alert {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 270px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 14px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 202;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .system-alert.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .alert-content {
+            padding: 19px 16px 20px;
+            text-align: center;
+        }
+
+        .alert-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 2px;
+            line-height: 1.29412;
+            letter-spacing: -0.41px;
+        }
+
+        .alert-message {
+            font-size: 13px;
+            color: #000;
+            line-height: 1.23077;
+            opacity: 0.6;
+            letter-spacing: -0.08px;
+        }
+
+        .alert-buttons {
+            margin-top: 20px;
+            border-top: 0.5px solid rgba(60, 60, 67, 0.18);
+            display: flex;
+            flex-direction: row;
+        }
+
+        .alert-button {
+            flex: 1;
+            height: 44px;
+            background: transparent;
+            border: none;
+            font-size: 17px;
+            color: #0052CC;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            font-weight: 400;
+            letter-spacing: -0.4px;
+        }
+
+        .alert-button:active {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .alert-button.primary {
+            font-weight: 600;
+            border-left: 0.5px solid rgba(60, 60, 67, 0.18);
+        }
+
+        /* 连接设备弹窗 */
+        .connecting-alert {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 270px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 14px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 202;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .connecting-alert.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .connecting-content {
+            padding: 20px 16px;
+            text-align: center;
+        }
+
+        .connecting-device-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 16px;
+        }
+
+        .connecting-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #E5E5EA;
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .connecting-status {
+            font-size: 15px;
+            color: #000;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-frame">
+        <!-- 灵动岛 -->
+        <div class="dynamic-island"></div>
+
+        <!-- 屏幕内容 -->
+        <div class="screen">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="time">9:41</div>
+                <div class="status-icons">
+                    <div class="signal">
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                    </div>
+                    <div class="wifi"></div>
+                    <div class="battery"></div>
+                </div>
+            </div>
+
+            <!-- 主内容区域 -->
+            <div class="main-content">
+                <div class="device-page">
+                    <!-- 初始连接按钮视图 -->
+                    <div class="initial-view" id="initialView">
+                        <div class="device-header">设备</div>
+                        <button class="connect-btn" id="connectBtn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6.5 6.5l11 11M12 2l5 5-5 5v-10zM12 22l-5-5 5-5v10z"/>
+                            </svg>
+                            连接设备
+                        </button>
+                    </div>
+
+                    <!-- 扫描蓝牙设备视图 -->
+                    <div class="scanning-view" id="scanningView">
+                        <div class="scanning-header">
+                            <button class="back-btn" id="backBtn">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M15 18l-6-6 6-6"/>
+                                </svg>
+                            </button>
+                            <div class="scanning-title">搜索设备</div>
+                            <button class="back-btn" id="refreshBtn">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- 雷达扫描动画 -->
+                        <div class="radar-container">
+                            <div class="radar-wrapper">
+                                <div class="radar-circle"></div>
+                                <div class="radar-circle"></div>
+                                <div class="radar-circle"></div>
+                                <div class="radar-circle"></div>
+                                <div class="bluetooth-icon-wrapper">
+                                    <svg width="24" height="24" viewBox="0 0 24 24">
+                                        <path d="M6.5 6.5l11 11L12 23V1l5.5 5.5-11 11"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="radar-scanning-text" id="radarScanningText">搜索中...</div>
+
+                        <div class="device-list hidden" id="bluetoothDeviceList">
+                            <!-- 动态生成的设备列表 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部菜单栏 -->
+            <div class="bottom-nav">
+                <div class="nav-item active">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="8" width="7" height="13" rx="2"/>
+                            <rect x="14" y="8" width="7" height="13" rx="2"/>
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">设备</div>
+                </div>
+                <div class="nav-item" onclick="window.location.href='profile-2menu.html'">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="5"/>
+                            <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">我的</div>
+                </div>
+            </div>
+
+            <!-- 底部指示条 -->
+            <div class="home-indicator"></div>
+
+            <!-- 遮罩层 -->
+            <div class="overlay" id="overlay"></div>
+
+            <!-- 蓝牙权限系统弹窗 -->
+            <div class="system-alert" id="bluetoothAlert">
+                <div class="alert-content">
+                    <div class="alert-title">"移动充电"想要使用蓝牙</div>
+                    <div class="alert-message">连接设备需要打开蓝牙。</div>
+                </div>
+                <div class="alert-buttons">
+                    <button class="alert-button cancel" id="denyBluetooth">不允许</button>
+                    <button class="alert-button primary" id="allowBluetooth">好</button>
+                </div>
+            </div>
+
+            <!-- 连接设备弹窗 -->
+            <div class="connecting-alert" id="connectingAlert">
+                <div class="connecting-content">
+                    <div class="connecting-device-name" id="connectingDeviceName">充电桩 #001</div>
+                    <div class="connecting-spinner"></div>
+                    <div class="connecting-status">正在建立连接...</div>
+                </div>
+                <div class="alert-buttons">
+                    <button class="alert-button cancel" id="cancelConnect">取消连接</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言配置
+        const i18n = {
+            '中文': {
+                pageTitle: '设备',
+                connectDevice: '连接设备',
+                searchDevice: '搜索设备',
+                searching: '搜索中...',
+                connect: '连接',
+                bluetoothTitle: '"移动充电"想要使用蓝牙',
+                bluetoothMessage: '连接设备需要打开蓝牙。',
+                deny: '不允许',
+                allow: '好',
+                connecting: '正在建立连接...',
+                cancelConnect: '取消连接',
+                navDevice: '设备',
+                navMe: '我的'
+            },
+            '繁體中文': {
+                pageTitle: '設備',
+                connectDevice: '連接設備',
+                searchDevice: '搜索設備',
+                searching: '搜索中...',
+                connect: '連接',
+                bluetoothTitle: '"移動充電"想要使用藍牙',
+                bluetoothMessage: '連接設備需要打開藍牙。',
+                deny: '不允許',
+                allow: '好',
+                connecting: '正在建立連接...',
+                cancelConnect: '取消連接',
+                navDevice: '設備',
+                navMe: '我的'
+            },
+            'English': {
+                pageTitle: 'Devices',
+                connectDevice: 'Connect Device',
+                searchDevice: 'Search Devices',
+                searching: 'Searching...',
+                connect: 'Connect',
+                bluetoothTitle: '"Mobile Charging" Would Like to Use Bluetooth',
+                bluetoothMessage: 'Bluetooth is required to connect devices.',
+                deny: 'Don\'t Allow',
+                allow: 'OK',
+                connecting: 'Connecting...',
+                cancelConnect: 'Cancel',
+                navDevice: 'Devices',
+                navMe: 'Me'
+            }
+        };
+
+        // 更新界面语言
+        function updateLanguage(lang) {
+            const texts = i18n[lang];
+            if (!texts) return;
+
+            // 更新页面标题
+            document.querySelector('.device-header').textContent = texts.pageTitle;
+
+            // 更新连接按钮
+            const connectBtnText = document.querySelector('.connect-btn').childNodes[2];
+            if (connectBtnText) connectBtnText.textContent = texts.connectDevice;
+
+            // 更新搜索设备标题
+            document.querySelector('.scanning-title').textContent = texts.searchDevice;
+
+            // 更新搜索中文本
+            document.getElementById('radarScanningText').textContent = texts.searching;
+
+            // 更新蓝牙弹窗
+            document.querySelector('.alert-title').textContent = texts.bluetoothTitle;
+            document.querySelector('.alert-message').textContent = texts.bluetoothMessage;
+            document.getElementById('denyBluetooth').textContent = texts.deny;
+            document.getElementById('allowBluetooth').textContent = texts.allow;
+
+            // 更新连接弹窗
+            document.querySelector('.connecting-status').textContent = texts.connecting;
+            document.getElementById('cancelConnect').textContent = texts.cancelConnect;
+
+            // 更新导航标签
+            const navLabels = document.querySelectorAll('.nav-label');
+            navLabels[0].textContent = texts.navDevice;
+            navLabels[1].textContent = texts.navMe;
+
+            // 保存当前语言以便动态生成的设备列表使用
+            window.currentTexts = texts;
+        }
+
+        // 模拟蓝牙设备数据
+        const mockDevices = [
+            { name: '充电桩 #001', id: 'CHG-001', signal: 4, distance: '1m' },
+            { name: '充电桩 #002', id: 'CHG-002', signal: 3, distance: '3m' },
+            { name: '充电桩 #003', id: 'CHG-003', signal: 4, distance: '2m' },
+            { name: '充电桩 #004', id: 'CHG-004', signal: 2, distance: '5m' },
+            { name: '充电桩 #005', id: 'CHG-005', signal: 3, distance: '4m' }
+        ];
+
+        // 页面元素
+        const connectBtn = document.getElementById('connectBtn');
+        const bluetoothAlert = document.getElementById('bluetoothAlert');
+        const allowBluetooth = document.getElementById('allowBluetooth');
+        const denyBluetooth = document.getElementById('denyBluetooth');
+        const initialView = document.getElementById('initialView');
+        const scanningView = document.getElementById('scanningView');
+        const bluetoothDeviceList = document.getElementById('bluetoothDeviceList');
+        const radarScanningText = document.getElementById('radarScanningText');
+        const overlay = document.getElementById('overlay');
+        const backBtn = document.getElementById('backBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const bottomNav = document.querySelector('.bottom-nav');
+        const connectingAlert = document.getElementById('connectingAlert');
+        const connectingDeviceName = document.getElementById('connectingDeviceName');
+        const cancelConnect = document.getElementById('cancelConnect');
+
+        let connectionTimeout = null;
+
+        // 生成设备列表
+        function generateDeviceList() {
+            const texts = window.currentTexts || i18n['中文'];
+            bluetoothDeviceList.innerHTML = '';
+            bluetoothDeviceList.classList.remove('hidden');
+
+            const deviceGroup = document.createElement('div');
+            deviceGroup.className = 'device-group';
+
+            mockDevices.forEach(device => {
+                const deviceCard = document.createElement('div');
+                deviceCard.className = 'device-card';
+                deviceCard.innerHTML = `
+                    <div class="device-info">
+                        <div class="device-name">${device.id}</div>
+                    </div>
+                    <button class="connect-device-btn">${texts.connect}</button>
+                `;
+
+                const connectBtn = deviceCard.querySelector('.connect-device-btn');
+                connectBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+
+                    connectingDeviceName.textContent = device.name;
+                    connectingAlert.classList.add('active');
+                    overlay.classList.add('active');
+
+                    connectionTimeout = setTimeout(() => {
+                        connectingAlert.classList.remove('active');
+                        overlay.classList.remove('active');
+                        // 连接成功后跳转到搜索页面
+                        window.location.href = 'search.html';
+                    }, 2500);
+                });
+
+                deviceGroup.appendChild(deviceCard);
+            });
+
+            bluetoothDeviceList.appendChild(deviceGroup);
+        }
+
+        // 点击连接设备按钮
+        connectBtn.addEventListener('click', function() {
+            bluetoothAlert.classList.add('active');
+            overlay.classList.add('active');
+        });
+
+        // 允许蓝牙
+        allowBluetooth.addEventListener('click', function() {
+            bluetoothAlert.classList.remove('active');
+            overlay.classList.remove('active');
+
+            initialView.style.display = 'none';
+            scanningView.classList.add('active');
+            bottomNav.style.display = 'none';
+
+            radarScanningText.style.display = 'block';
+            bluetoothDeviceList.classList.add('hidden');
+
+            setTimeout(() => {
+                generateDeviceList();
+            }, 2000);
+        });
+
+        // 不允许蓝牙
+        denyBluetooth.addEventListener('click', function() {
+            bluetoothAlert.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // 返回按钮
+        backBtn.addEventListener('click', function() {
+            scanningView.classList.remove('active');
+            initialView.style.display = 'block';
+            bottomNav.style.display = 'flex';
+
+            radarScanningText.style.display = 'none';
+            bluetoothDeviceList.classList.add('hidden');
+            bluetoothDeviceList.innerHTML = '';
+        });
+
+        // 刷新按钮
+        refreshBtn.addEventListener('click', function() {
+            refreshBtn.classList.add('refreshing');
+
+            radarScanningText.style.display = 'block';
+            bluetoothDeviceList.classList.add('hidden');
+            bluetoothDeviceList.innerHTML = '';
+
+            setTimeout(() => {
+                generateDeviceList();
+                refreshBtn.classList.remove('refreshing');
+            }, 2000);
+        });
+
+        // 取消连接按钮
+        cancelConnect.addEventListener('click', function() {
+            if (connectionTimeout) {
+                clearTimeout(connectionTimeout);
+                connectionTimeout = null;
+            }
+
+            connectingAlert.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // 页面加载时恢复语言设置
+        const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
+        updateLanguage(savedLanguage);
+    </script>
+</body>
+</html>

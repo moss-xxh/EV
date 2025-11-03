@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chargers - i.EV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* iPhone 外框 */
+        .iphone-frame {
+            width: 393px;
+            height: 852px;
+            background: #1a1a1a;
+            border-radius: 55px;
+            padding: 12px;
+            box-shadow:
+                0 0 0 2px #2a2a2a,
+                0 0 0 8px #1a1a1a,
+                0 30px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: scale(1.1);
+            transform-origin: center;
+        }
+
+        /* 响应式缩放 */
+        @media (max-height: 1000px) {
+            .iphone-frame {
+                transform: scale(0.95);
+            }
+        }
+
+        @media (max-height: 900px) {
+            .iphone-frame {
+                transform: scale(0.85);
+            }
+        }
+
+        @media (max-height: 800px) {
+            .iphone-frame {
+                transform: scale(0.75);
+            }
+        }
+
+        /* 灵动岛 */
+        .dynamic-island {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 126px;
+            height: 37px;
+            background: #000;
+            border-radius: 22px;
+            z-index: 10;
+        }
+
+        /* 屏幕内容 */
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 45px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            height: 54px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 20px;
+            padding-top: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .time {
+            font-weight: 600;
+            position: absolute;
+            left: 35px;
+            top: 18px;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            position: absolute;
+            right: 35px;
+            top: 18px;
+        }
+
+        /* 信号图标 */
+        .signal {
+            display: flex;
+            gap: 1px;
+            align-items: flex-end;
+            height: 12px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 6px; }
+        .signal-bar:nth-child(3) { height: 8px; }
+        .signal-bar:nth-child(4) { height: 10px; }
+
+        /* WiFi 图标 */
+        .wifi {
+            width: 15px;
+            height: 11px;
+            position: relative;
+        }
+
+        .wifi::before {
+            content: '◗';
+            font-size: 15px;
+            color: #000;
+            transform: rotate(45deg);
+            display: block;
+        }
+
+        /* 电池图标 */
+        .battery {
+            width: 24px;
+            height: 11px;
+            border: 1.5px solid #000;
+            border-radius: 3px;
+            position: relative;
+            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+        }
+
+        .battery::before {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.5px;
+            height: 4px;
+            background: #000;
+            border-radius: 0 1px 1px 0;
+        }
+
+        .battery::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0 16px 0 16px;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 16px;
+            padding: 8px 0;
+            flex-shrink: 0;
+        }
+
+        /* 搜索附近充电桩按钮 */
+        .search-nearby-btn {
+            background: linear-gradient(135deg, #0052CC 0%, #003B99 100%);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0, 82, 204, 0.3);
+            border: none;
+            width: 100%;
+            margin-bottom: 24px;
+            flex-shrink: 0;
+        }
+
+        .search-nearby-btn:active {
+            transform: scale(0.98);
+        }
+
+        .search-nearby-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-nearby-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .search-nearby-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .search-nearby-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .search-nearby-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-nearby-icon img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        /* 充电桩列表容器 */
+        .charger-list-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 100px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 隐藏滚动条 */
+        .charger-list-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .charger-list-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 充电桩列表 */
+        .charger-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .charger-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .charger-card-wrapper {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .swipe-delete-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            background: #FF3B30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .swipe-delete-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .charger-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #0052CC 0%, #003B99 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .charger-icon img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        .charger-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .charger-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 6px;
+        }
+
+        .charger-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .device-status {
+            color: #000;
+            font-weight: 500;
+        }
+
+        .usage-status {
+            background: #0052CC;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34C759;
+        }
+
+        .status-dot.offline {
+            background: #8E8E93;
+        }
+
+        .enter-arrow {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .enter-arrow svg {
+            width: 100%;
+            height: 100%;
+            stroke: #C7C7CC;
+            fill: none;
+            stroke-width: 2.5;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 24px;
+            text-align: center;
+        }
+
+        .empty-state.show {
+            display: flex;
+        }
+
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            background: #F5F5F5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .empty-icon img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            opacity: 0.4;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        .empty-subtitle {
+            font-size: 15px;
+            color: #8E8E93;
+            line-height: 1.5;
+        }
+
+        /* 底部菜单栏 */
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 22px;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 8px;
+            position: absolute;
+            bottom: 25px;
+            left: 16px;
+            right: 16px;
+            height: 70px;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            flex: 1;
+        }
+
+        .nav-item:active {
+            transform: scale(0.88);
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .nav-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: #8E8E93;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.25s ease;
+        }
+
+        .nav-item.active .nav-icon svg {
+            stroke: #0052CC;
+            stroke-width: 2;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: #8E8E93;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .nav-item.active .nav-label {
+            color: #0052CC;
+            font-weight: 600;
+        }
+
+        /* 底部指示条 */
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 5px;
+            background: #000;
+            border-radius: 3px;
+            opacity: 0.3;
+        }
+
+        /* 遮罩层 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 200;
+            border-radius: 45px;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 删除确认弹窗 */
+        .delete-alert {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 270px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 14px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 202;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .delete-alert.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .alert-content {
+            padding: 19px 16px 20px;
+            text-align: center;
+        }
+
+        .alert-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 2px;
+            line-height: 1.29412;
+            letter-spacing: -0.41px;
+        }
+
+        .alert-message {
+            font-size: 13px;
+            color: #000;
+            line-height: 1.23077;
+            opacity: 0.6;
+            letter-spacing: -0.08px;
+        }
+
+        .alert-buttons {
+            margin-top: 20px;
+            border-top: 0.5px solid rgba(60, 60, 67, 0.18);
+            display: flex;
+            flex-direction: row;
+        }
+
+        .alert-button {
+            flex: 1;
+            height: 44px;
+            background: transparent;
+            border: none;
+            font-size: 17px;
+            color: #0052CC;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            font-weight: 400;
+            letter-spacing: -0.4px;
+        }
+
+        .alert-button:active {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .alert-button.delete {
+            color: #FF3B30;
+            font-weight: 600;
+            border-left: 0.5px solid rgba(60, 60, 67, 0.18);
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-frame">
+        <!-- 灵动岛 -->
+        <div class="dynamic-island"></div>
+
+        <!-- 屏幕内容 -->
+        <div class="screen">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="time">9:41</div>
+                <div class="status-icons">
+                    <div class="signal">
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                    </div>
+                    <div class="wifi"></div>
+                    <div class="battery"></div>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="main-content">
+                <!-- 页面标题 -->
+                <h1 class="page-title">充电桩</h1>
+
+                <!-- 搜索附近充电桩按钮 -->
+                <button class="search-nearby-btn" id="searchNearbyBtn">
+                    <div class="search-nearby-content">
+                        <div class="search-nearby-info">
+                            <div class="search-nearby-title">搜索附近充电桩</div>
+                        </div>
+                        <div class="search-nearby-icon">
+                            <img src="充电.png" alt="充电桩">
+                        </div>
+                    </div>
+                </button>
+
+                <!-- 充电桩列表容器（可滚动） -->
+                <div class="charger-list-container">
+                    <!-- 充电桩列表 -->
+                    <div class="charger-list" id="chargerList">
+                        <!-- 动态生成的充电桩列表 -->
+                    </div>
+
+                    <!-- 空状态 -->
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">
+                            <img src="充电.png" alt="充电桩">
+                        </div>
+                        <div class="empty-title">暂无充电桩</div>
+                        <div class="empty-subtitle">点击上方按钮搜索并添加附近的充电桩设备</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部菜单栏 -->
+            <div class="bottom-nav">
+                <div class="nav-item active">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">充电桩</div>
+                </div>
+                <div class="nav-item" onclick="navigateTo('record')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">记录</div>
+                </div>
+                <div class="nav-item" onclick="navigateTo('me')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="5"/>
+                            <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">我的</div>
+                </div>
+            </div>
+
+            <!-- 底部指示条 -->
+            <div class="home-indicator"></div>
+
+            <!-- 遮罩层 -->
+            <div class="overlay" id="overlay"></div>
+
+            <!-- 删除确认弹窗 -->
+            <div class="delete-alert" id="deleteAlert">
+                <div class="alert-content">
+                    <div class="alert-title">删除充电桩</div>
+                    <div class="alert-message">确定要删除这个充电桩设备吗?</div>
+                </div>
+                <div class="alert-buttons">
+                    <button class="alert-button" id="cancelDelete">取消</button>
+                    <button class="alert-button delete" id="confirmDelete">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言配置
+        const i18n = {
+            '中文': {
+                pageTitle: '充电桩',
+                searchNearby: '搜索附近充电桩',
+                online: '在线',
+                offline: '离线',
+                busy: '使用中',
+                gear: '档',
+                emptyTitle: '暂无充电桩',
+                emptySubtitle: '点击上方按钮搜索并添加附近的充电桩设备',
+                deleteTitle: '删除充电桩',
+                deleteMessage: '确定要删除这个充电桩设备吗?',
+                cancel: '取消',
+                delete: '删除',
+                navChargers: '充电桩',
+                navRecords: '记录',
+                navMe: '我的'
+            },
+            '繁體中文': {
+                pageTitle: '充電樁',
+                searchNearby: '搜索附近充電樁',
+                online: '在線',
+                offline: '離線',
+                busy: '使用中',
+                gear: '檔',
+                emptyTitle: '暫無充電樁',
+                emptySubtitle: '點擊上方按鈕搜索並添加附近的充電樁設備',
+                deleteTitle: '刪除充電樁',
+                deleteMessage: '確定要刪除這個充電樁設備嗎?',
+                cancel: '取消',
+                delete: '刪除',
+                navChargers: '充電樁',
+                navRecords: '記錄',
+                navMe: '我的'
+            },
+            'English': {
+                pageTitle: 'Chargers',
+                searchNearby: 'Search Nearby Chargers',
+                online: 'Online',
+                offline: 'Offline',
+                busy: 'In Use',
+                gear: 'Gear',
+                emptyTitle: 'No Chargers',
+                emptySubtitle: 'Tap the button above to search and add nearby charging devices',
+                deleteTitle: 'Delete Charger',
+                deleteMessage: 'Are you sure you want to delete this charger?',
+                cancel: 'Cancel',
+                delete: 'Delete',
+                navChargers: 'Chargers',
+                navRecords: 'Records',
+                navMe: 'Me'
+            }
+        };
+
+        // 更新界面语言
+        function updateLanguage(lang) {
+            const texts = i18n[lang];
+            if (!texts) return;
+
+            // 更新页面标题
+            document.querySelector('.page-title').textContent = texts.pageTitle;
+
+            // 更新搜索按钮
+            document.querySelector('.search-nearby-title').textContent = texts.searchNearby;
+
+            // 更新空状态
+            document.querySelector('.empty-title').textContent = texts.emptyTitle;
+            document.querySelector('.empty-subtitle').textContent = texts.emptySubtitle;
+
+            // 更新删除弹窗
+            document.querySelector('.alert-title').textContent = texts.deleteTitle;
+            document.querySelector('.alert-message').textContent = texts.deleteMessage;
+            document.getElementById('cancelDelete').textContent = texts.cancel;
+            document.getElementById('confirmDelete').textContent = texts.delete;
+
+            // 更新导航标签
+            const navLabels = document.querySelectorAll('.nav-label');
+            navLabels[0].textContent = texts.navChargers;
+            navLabels[1].textContent = texts.navRecords;
+            navLabels[2].textContent = texts.navMe;
+
+            // 重新渲染充电桩列表以更新状态文本
+            renderChargerList();
+        }
+
+        // 获取当前正在充电的设备ID
+        function getChargingDeviceId() {
+            const chargingStatusStr = localStorage.getItem('chargingStatus');
+            if (!chargingStatusStr) return null;
+
+            try {
+                const chargingData = JSON.parse(chargingStatusStr);
+                if (chargingData.isCharging && chargingData.deviceID) {
+                    return chargingData.deviceID;
+                }
+            } catch (error) {
+                console.error('解析充电状态失败:', error);
+            }
+            return null;
+        }
+
+        // 获取已保存的充电桩数据
+        function getSavedChargers() {
+            const saved = localStorage.getItem('savedChargers');
+            const chargers = saved ? JSON.parse(saved) : [
+                { id: '3847291650', name: '3847291650', deviceStatus: 'online', usageStatus: 'idle' },
+                { id: '5629384710', name: '5629384710', deviceStatus: 'online', usageStatus: 'busy' }
+            ];
+
+            // 只有在有保存数据时，才同步充电状态
+            if (saved) {
+                // 同步充电状态：检查是否有设备正在充电
+                const chargingStatusStr = localStorage.getItem('chargingStatus');
+                let chargingData = null;
+                if (chargingStatusStr) {
+                    try {
+                        chargingData = JSON.parse(chargingStatusStr);
+                    } catch (error) {
+                        console.error('解析充电状态失败:', error);
+                    }
+                }
+
+                chargers.forEach(charger => {
+                    if (chargingData && chargingData.isCharging && charger.id === chargingData.deviceID) {
+                        charger.usageStatus = 'busy';
+                        charger.gear = chargingData.gear || 3; // 同步档位信息
+                    } else if (charger.usageStatus === 'busy') {
+                        // 如果设备标记为使用中，但实际没有充电，则重置为空闲
+                        charger.usageStatus = 'idle';
+                        delete charger.gear;
+                    }
+                });
+            }
+
+            return chargers;
+        }
+
+        // 保存充电桩数据
+        function saveChargers(chargers) {
+            localStorage.setItem('savedChargers', JSON.stringify(chargers));
+        }
+
+        let savedChargers = getSavedChargers();
+
+        // 页面元素
+        const chargerList = document.getElementById('chargerList');
+        const emptyState = document.getElementById('emptyState');
+        const searchNearbyBtn = document.getElementById('searchNearbyBtn');
+        const overlay = document.getElementById('overlay');
+        const deleteAlert = document.getElementById('deleteAlert');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const confirmDelete = document.getElementById('confirmDelete');
+
+        let chargerToDelete = null;
+
+        // 渲染充电桩列表
+        function renderChargerList() {
+            const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
+            const texts = i18n[savedLanguage];
+
+            chargerList.innerHTML = '';
+
+            if (savedChargers.length === 0) {
+                emptyState.classList.add('show');
+            } else {
+                emptyState.classList.remove('show');
+
+                savedChargers.forEach(charger => {
+                    // 创建包装器
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'charger-card-wrapper';
+                    wrapper.dataset.id = charger.id;
+
+                    // 构建状态HTML
+                    let statusHTML = '';
+                    const isOffline = charger.deviceStatus === 'offline';
+
+                    if (isOffline) {
+                        // 离线状态
+                        statusHTML = `
+                            <div class="status-row device-status">
+                                <div class="status-dot offline"></div>
+                                <span>${texts.offline}</span>
+                            </div>
+                        `;
+                    } else {
+                        // 在线状态
+                        const deviceStatusHTML = `
+                            <div class="status-row device-status">
+                                <div class="status-dot"></div>
+                                <span>${texts.online}</span>
+                            </div>
+                        `;
+
+                        // 使用状态和档位信息
+                        let usageStatusHTML = '';
+                        if (charger.usageStatus === 'busy') {
+                            // 档位信息直接显示在"使用中"标签内
+                            const gearText = charger.gear ? ` · ${charger.gear}${texts.gear}` : '';
+                            usageStatusHTML = `
+                                <div class="usage-status">${texts.busy}${gearText}</div>
+                            `;
+                        }
+
+                        statusHTML = deviceStatusHTML + usageStatusHTML;
+                    }
+
+                    // 只有在线设备才显示删除按钮
+                    const deleteButtonHTML = !isOffline ? `
+                        <div class="swipe-delete-btn" data-id="${charger.id}">
+                            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                        </div>
+                    ` : '';
+
+                    wrapper.innerHTML = `
+                        ${deleteButtonHTML}
+                        <div class="charger-card" data-id="${charger.id}">
+                            <div class="charger-icon">
+                                <img src="充电.png" alt="充电桩">
+                            </div>
+                            <div class="charger-info">
+                                <div class="charger-name">${charger.name}</div>
+                                <div class="charger-status">
+                                    ${statusHTML}
+                                </div>
+                            </div>
+                            <div class="enter-arrow">
+                                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </div>
+                        </div>
+                    `;
+
+                    const card = wrapper.querySelector('.charger-card');
+                    const deleteBtn = wrapper.querySelector('.swipe-delete-btn');
+
+                    // 只有在线设备才启用左滑删除
+                    if (!isOffline) {
+                        // 左滑手势变量
+                        let touchStartX = 0;
+                        let touchCurrentX = 0;
+                        let isSwiping = false;
+
+                        // 触摸开始
+                        card.addEventListener('touchstart', function(e) {
+                            touchStartX = e.touches[0].clientX;
+                            isSwiping = true;
+                        });
+
+                        // 触摸移动
+                        card.addEventListener('touchmove', function(e) {
+                            if (!isSwiping) return;
+
+                            touchCurrentX = e.touches[0].clientX;
+                            const diff = touchStartX - touchCurrentX;
+
+                            // 只允许左滑
+                            if (diff > 0 && diff <= 80) {
+                                card.style.transform = `translateX(-${diff}px)`;
+                            }
+                        });
+
+                        // 触摸结束
+                        card.addEventListener('touchend', function(e) {
+                            if (!isSwiping) return;
+                            isSwiping = false;
+
+                            const diff = touchStartX - touchCurrentX;
+
+                            // 如果滑动超过40px，显示删除按钮
+                            if (diff > 40) {
+                                card.style.transform = 'translateX(-80px)';
+                            } else {
+                                card.style.transform = 'translateX(0)';
+                            }
+                        });
+
+                        // 点击卡片进入详情
+                        card.addEventListener('click', function() {
+                            // 如果卡片已经左滑，点击时先恢复
+                            if (card.style.transform === 'translateX(-80px)') {
+                                card.style.transform = 'translateX(0)';
+                            } else {
+                                // 如果设备正在使用中，设置充电状态
+                                if (charger.usageStatus === 'busy') {
+                                    const chargingStatus = {
+                                        isCharging: true,
+                                        deviceID: charger.id,
+                                        gear: charger.gear || 3,
+                                        startTime: new Date().toISOString()
+                                    };
+                                    localStorage.setItem('chargingStatus', JSON.stringify(chargingStatus));
+                                }
+                                window.location.href = `device-detail.html?id=${charger.id}`;
+                            }
+                        });
+
+                        // 删除按钮事件
+                        deleteBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            chargerToDelete = charger.id;
+                            overlay.classList.add('active');
+                            deleteAlert.classList.add('active');
+                            // 恢复卡片位置
+                            card.style.transform = 'translateX(0)';
+                        });
+                    } else {
+                        // 离线设备直接点击进入详情
+                        card.addEventListener('click', function() {
+                            window.location.href = `device-detail.html?id=${charger.id}`;
+                        });
+                    }
+
+                    chargerList.appendChild(wrapper);
+                });
+            }
+        }
+
+        // 搜索附近充电桩
+        searchNearbyBtn.addEventListener('click', function() {
+            window.location.href = 'charger-gun-finder.html';
+        });
+
+        // 取消删除
+        cancelDelete.addEventListener('click', function() {
+            overlay.classList.remove('active');
+            deleteAlert.classList.remove('active');
+            chargerToDelete = null;
+        });
+
+        // 确认删除
+        confirmDelete.addEventListener('click', function() {
+            if (chargerToDelete) {
+                savedChargers = savedChargers.filter(c => c.id !== chargerToDelete);
+                saveChargers(savedChargers);
+                renderChargerList();
+            }
+
+            overlay.classList.remove('active');
+            deleteAlert.classList.remove('active');
+            chargerToDelete = null;
+        });
+
+        // 点击遮罩层关闭弹窗
+        overlay.addEventListener('click', function() {
+            overlay.classList.remove('active');
+            deleteAlert.classList.remove('active');
+            chargerToDelete = null;
+        });
+
+        // 底部导航
+        function navigateTo(page) {
+            if (page === 'record') {
+                window.location.href = 'records.html';
+            } else if (page === 'me') {
+                window.location.href = 'profile-3menu.html';
+            }
+        }
+
+        // 监听充电状态变化
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'chargingStatus') {
+                // 充电状态改变，重新渲染列表
+                savedChargers = getSavedChargers();
+                renderChargerList();
+            }
+        });
+
+        // 页面可见性变化时重新加载数据
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                savedChargers = getSavedChargers();
+                renderChargerList();
+            }
+        });
+
+        // 定期同步充电状态（每秒检查一次）
+        setInterval(function() {
+            const currentChargers = getSavedChargers();
+            // 检查是否有状态变化
+            let hasChange = false;
+            for (let i = 0; i < currentChargers.length; i++) {
+                if (savedChargers[i] && currentChargers[i].usageStatus !== savedChargers[i].usageStatus) {
+                    hasChange = true;
+                    break;
+                }
+            }
+            if (hasChange) {
+                savedChargers = currentChargers;
+                renderChargerList();
+            }
+        }, 1000);
+
+        // 页面加载时恢复语言设置
+        const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
+        updateLanguage(savedLanguage); // 无论什么语言都更新一次，确保菜单栏正确翻译
+
+        // 初始化页面
+        renderChargerList();
+    </script>
+</body>
+</html>
