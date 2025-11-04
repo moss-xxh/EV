@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>i.EV App Prototype</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* iPhone Frame */
+        .iphone-frame {
+            width: 393px;
+            height: 852px;
+            background: #1a1a1a;
+            border-radius: 55px;
+            padding: 12px;
+            box-shadow:
+                0 0 0 2px #2a2a2a,
+                0 0 0 8px #1a1a1a,
+                0 30px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: scale(1.1);
+            transform-origin: center;
+        }
+
+        /* Responsive Scaling */
+        @media (max-height: 1000px) {
+            .iphone-frame {
+                transform: scale(0.95);
+            }
+        }
+
+        @media (max-height: 900px) {
+            .iphone-frame {
+                transform: scale(0.85);
+            }
+        }
+
+        @media (max-height: 800px) {
+            .iphone-frame {
+                transform: scale(0.75);
+            }
+        }
+
+        /* Dynamic Island Area */
+        .dynamic-island {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 126px;
+            height: 37px;
+            background: #000;
+            border-radius: 22px;
+            z-index: 10;
+            box-shadow:
+                inset 0 1px 2px rgba(255, 255, 255, 0.1),
+                0 0 0 0.5px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Camera and Sensor Inside Dynamic Island */
+        .island-camera {
+            position: absolute;
+            top: 50%;
+            left: 30px;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: #0a0a0a;
+            border-radius: 50%;
+            border: 0.5px solid #222;
+        }
+
+        .island-sensor {
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #0a0a0a;
+            border-radius: 50%;
+        }
+
+        /* Screen Content Area */
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #F5F0E8 0%, #EDE8DF 100%);
+            background-size: cover;
+            background-position: center;
+            border-radius: 45px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 54px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 20px;
+            padding-top: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+            position: relative;
+        }
+
+        .time {
+            font-weight: 600;
+            position: absolute;
+            left: 35px;
+            top: 18px;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            position: absolute;
+            right: 35px;
+            top: 18px;
+        }
+
+        /* Signal Icon */
+        .signal {
+            display: flex;
+            gap: 1px;
+            align-items: flex-end;
+            height: 12px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 6px; }
+        .signal-bar:nth-child(3) { height: 8px; }
+        .signal-bar:nth-child(4) { height: 10px; }
+
+        /* WiFi Icon */
+        .wifi {
+            width: 15px;
+            height: 11px;
+            position: relative;
+        }
+
+        .wifi::before {
+            content: '◗';
+            font-size: 15px;
+            color: #000;
+            transform: rotate(45deg);
+            display: block;
+        }
+
+        /* Battery Icon */
+        .battery {
+            width: 24px;
+            height: 11px;
+            border: 1.5px solid #000;
+            border-radius: 3px;
+            position: relative;
+            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+        }
+
+        .battery::before {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.5px;
+            height: 4px;
+            background: #000;
+            border-radius: 0 1px 1px 0;
+        }
+
+        .battery::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        /* Home Screen Content Area */
+        .home-screen {
+            height: calc(100% - 54px);
+            padding: 40px 25px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* App Icon Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px 16px;
+            margin-bottom: 15px;
+        }
+
+        .app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 13.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* App Name Label */
+        .app-label {
+            font-size: 12px;
+            color: #000;
+            text-align: center;
+            text-shadow: none;
+            font-weight: 400;
+        }
+
+        /* Charging Station Icon */
+        .icon-charging-station {
+            background: linear-gradient(135deg, #0052CC 0%, #003B99 100%);
+            position: relative;
+        }
+
+        .icon-charging-station::before {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            background-image: url('logo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: brightness(0) invert(1);
+            z-index: 2;
+        }
+
+        /* Logo Gloss Effect */
+        .icon-charging-station::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 13.5px 13.5px 0 0;
+            z-index: 1;
+        }
+
+        /* Home Indicator Bar */
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 5px;
+            background: #000;
+            border-radius: 3px;
+            opacity: 0.3;
+        }
+
+        /* Click Effect */
+        .app-icon {
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .app-icon:active .icon {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-frame">
+        <!-- Dynamic Island -->
+        <div class="dynamic-island">
+            <div class="island-camera"></div>
+            <div class="island-sensor"></div>
+        </div>
+
+        <!-- Screen Content -->
+        <div class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="time">9:41</div>
+                <div class="status-icons">
+                    <div class="signal">
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                    </div>
+                    <div class="wifi"></div>
+                    <div class="battery"></div>
+                </div>
+            </div>
+
+            <!-- Home Screen Content -->
+            <div class="home-screen">
+                <!-- App Icon Grid -->
+                <div class="app-grid">
+                    <div class="app-icon" id="chargingApp">
+                        <div class="icon icon-charging-station"></div>
+                        <div class="app-label">i.EV</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Indicator Bar -->
+            <div class="home-indicator"></div>
+        </div>
+    </div>
+
+    <script>
+        // Click charging app icon to navigate to splash screen
+        document.getElementById('chargingApp').addEventListener('click', function() {
+            window.location.href = 'splash.html';
+        });
+    </script>
+</body>
+</html>
