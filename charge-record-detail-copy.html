@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charging Record - i.EV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* iPhone 外框 */
+        .iphone-frame {
+            width: 393px;
+            height: 852px;
+            background: #1a1a1a;
+            border-radius: 55px;
+            padding: 12px;
+            box-shadow:
+                0 0 0 2px #2a2a2a,
+                0 0 0 8px #1a1a1a,
+                0 30px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: scale(1.1);
+        }
+
+        @media (max-height: 1000px) { .iphone-frame { transform: scale(0.95); } }
+        @media (max-height: 900px) { .iphone-frame { transform: scale(0.85); } }
+        @media (max-height: 800px) { .iphone-frame { transform: scale(0.75); } }
+
+        /* 灵动岛 */
+        .dynamic-island {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 126px;
+            height: 37px;
+            background: #000;
+            border-radius: 22px;
+            z-index: 10;
+        }
+
+        /* 屏幕内容 */
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 45px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            height: 54px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 20px;
+            padding-top: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .time {
+            font-weight: 600;
+            position: absolute;
+            left: 35px;
+            top: 18px;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            position: absolute;
+            right: 35px;
+            top: 18px;
+        }
+
+        /* 信号图标 */
+        .signal {
+            display: flex;
+            gap: 1px;
+            align-items: flex-end;
+            height: 12px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 6px; }
+        .signal-bar:nth-child(3) { height: 8px; }
+        .signal-bar:nth-child(4) { height: 10px; }
+
+        /* WiFi 图标 */
+        .wifi {
+            width: 15px;
+            height: 11px;
+            position: relative;
+        }
+
+        .wifi::before {
+            content: '◗';
+            font-size: 15px;
+            color: #000;
+            transform: rotate(45deg);
+            display: block;
+        }
+
+        /* 电池图标 */
+        .battery {
+            width: 24px;
+            height: 11px;
+            border: 1.5px solid #000;
+            border-radius: 3px;
+            position: relative;
+            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+        }
+
+        .battery::before {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.5px;
+            height: 4px;
+            background: #000;
+            border-radius: 0 1px 1px 0;
+        }
+
+        .battery::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 16px 16px 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 隐藏滚动条 */
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .main-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 顶部导航栏 */
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            padding: 8px 0;
+        }
+
+        .detail-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            text-align: center;
+        }
+
+        /* 底部完成按钮 */
+        .complete-btn {
+            width: calc(100% - 32px);
+            height: 50px;
+            background: #0052CC;
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 20px 16px 40px;
+            box-shadow: 0 2px 12px rgba(0, 82, 204, 0.2);
+        }
+
+        .complete-btn:active {
+            transform: scale(0.98);
+            background: #003B99;
+        }
+
+        /* 充电摘要卡片 */
+        .summary-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 32px 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #0052CC 0%, #003B99 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(0, 82, 204, 0.3);
+        }
+
+        .summary-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .summary-amount {
+            font-size: 40px;
+            font-weight: 300;
+            color: #000;
+            letter-spacing: -1px;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: #8E8E93;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 详情卡片 */
+        .detail-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .detail-item {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 15px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: #8E8E93;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        /* 底部菜单栏 - 隐藏 */
+        .bottom-nav {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            flex: 1;
+        }
+
+        .nav-item:active {
+            transform: scale(0.88);
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .nav-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: #8E8E93;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.25s ease;
+        }
+
+        .nav-item.active .nav-icon svg {
+            stroke: #0052CC;
+            stroke-width: 2;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: #8E8E93;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .nav-item.active .nav-label {
+            color: #0052CC;
+            font-weight: 600;
+        }
+
+        /* 底部指示条 */
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 5px;
+            background: #000;
+            border-radius: 3px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-frame">
+        <!-- 灵动岛 -->
+        <div class="dynamic-island"></div>
+
+        <!-- 屏幕内容 -->
+        <div class="screen">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="time">9:41</div>
+                <div class="status-icons">
+                    <div class="signal">
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                    </div>
+                    <div class="wifi"></div>
+                    <div class="battery"></div>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="main-content">
+                <!-- 顶部导航栏 -->
+                <div class="detail-header">
+                    <div class="detail-title">Charging Record</div>
+                </div>
+
+                <!-- 充电摘要卡片 -->
+                <div class="summary-card">
+                    <div class="summary-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/>
+                        </svg>
+                    </div>
+                    <div class="summary-amount" id="energyAmount">45.6 kWh</div>
+                    <div class="summary-label">Energy</div>
+                </div>
+
+                <!-- 详情卡片 -->
+                <div class="detail-card">
+                    <div class="detail-item">
+                        <div class="detail-label">Charger</div>
+                        <div class="detail-value" id="chargerName">CHG-001</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Start Time</div>
+                        <div class="detail-value" id="startTime">2025-10-28 14:30</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Time</div>
+                        <div class="detail-value" id="endTime">2025-10-28 16:45</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value" id="duration">2小时15分</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Energy</div>
+                        <div class="detail-value" id="chargeAmount">45.6 kWh</div>
+                    </div>
+                </div>
+
+                <!-- 底部完成按钮 -->
+                <button class="complete-btn" onclick="goToSearch()">Done</button>
+            </div>
+
+            <!-- 底部菜单栏 -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="navigateTo('device')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="8" width="7" height="13" rx="2"/>
+                            <rect x="14" y="8" width="7" height="13" rx="2"/>
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">设备</div>
+                </div>
+                <div class="nav-item active" onclick="navigateTo('record')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">记录</div>
+                </div>
+                <div class="nav-item" onclick="navigateTo('me')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="5"/>
+                            <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">我的</div>
+                </div>
+            </div>
+
+            <!-- 底部指示条 -->
+            <div class="home-indicator"></div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言配置
+        const i18n = {
+            '中文': {
+                pageTitle: '充电记录详情',
+                energyLabel: '充电量',
+                charger: '充电桩',
+                startTime: '开始时间',
+                endTime: '结束时间',
+                duration: '充电时长',
+                energy: '充电量',
+                doneBtn: '完成'
+            },
+            '繁體中文': {
+                pageTitle: '充電記錄詳情',
+                energyLabel: '充電量',
+                charger: '充電樁',
+                startTime: '開始時間',
+                endTime: '結束時間',
+                duration: '充電時長',
+                energy: '充電量',
+                doneBtn: '完成'
+            },
+            'English': {
+                pageTitle: 'Charging Record',
+                energyLabel: 'Energy',
+                charger: 'Charger',
+                startTime: 'Start Time',
+                endTime: 'End Time',
+                duration: 'Duration',
+                energy: 'Energy',
+                doneBtn: 'Done'
+            }
+        };
+
+        // 更新界面语言
+        function updateLanguage(lang) {
+            const texts = i18n[lang];
+            if (!texts) return;
+
+            // 更新页面标题
+            document.querySelector('.detail-title').textContent = texts.pageTitle;
+
+            // 更新摘要标签
+            document.querySelector('.summary-label').textContent = texts.energyLabel;
+
+            // 更新详情标签
+            const detailLabels = document.querySelectorAll('.detail-label');
+            if (detailLabels.length >= 5) {
+                detailLabels[0].textContent = texts.charger;
+                detailLabels[1].textContent = texts.startTime;
+                detailLabels[2].textContent = texts.endTime;
+                detailLabels[3].textContent = texts.duration;
+                detailLabels[4].textContent = texts.energy;
+            }
+
+            // 重新格式化时长显示
+            const durationElement = document.getElementById('duration');
+            if (durationElement && window.durationMinutesValue) {
+                durationElement.textContent = formatDuration(window.durationMinutesValue);
+            }
+
+            // 更新完成按钮文本
+            const completeBtn = document.querySelector('.complete-btn');
+            if (completeBtn) completeBtn.textContent = texts.doneBtn;
+        }
+
+        // 从URL参数获取充电记录信息
+        const urlParams = new URLSearchParams(window.location.search);
+        const chargerName = urlParams.get('charger') || 'CHG-001';
+        const date = urlParams.get('date') || '2025-10-28';
+        const time = urlParams.get('time') || '14:30';
+        const durationMinutes = parseInt(urlParams.get('duration')) || 135;  // 接收分钟数
+        const energy = urlParams.get('energy') || '45.6';
+
+        // 格式化时长（根据当前语言）
+        function formatDuration(minutes) {
+            const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
+            const lang = savedLanguage;
+
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+
+            if (lang === 'English') {
+                if (hours > 0 && mins > 0) {
+                    return `${hours}h ${mins}min`;
+                } else if (hours > 0) {
+                    return `${hours}h`;
+                } else {
+                    return `${mins}min`;
+                }
+            } else {
+                // 中文
+                if (hours > 0 && mins > 0) {
+                    return `${hours}小时${mins}分`;
+                } else if (hours > 0) {
+                    return `${hours}小时`;
+                } else {
+                    return `${mins}分`;
+                }
+            }
+        }
+
+        // 计算结束时间
+        function calculateEndTime(startDate, startTime, totalMinutes) {
+            // 创建开始时间
+            const startDateTime = new Date(`${startDate}T${startTime}:00`);
+
+            // 计算结束时间
+            const endDateTime = new Date(startDateTime.getTime() + totalMinutes * 60 * 1000);
+
+            // 格式化输出
+            const endDate = endDateTime.toISOString().split('T')[0];
+            const endHour = String(endDateTime.getHours()).padStart(2, '0');
+            const endMinute = String(endDateTime.getMinutes()).padStart(2, '0');
+
+            return `${endDate} ${endHour}:${endMinute}`;
+        }
+
+        // 填充充电记录详情
+        const endTime = calculateEndTime(date, time, durationMinutes);
+
+        // 保存分钟数到全局变量以便语言切换时使用
+        window.durationMinutesValue = durationMinutes;
+
+        document.getElementById('chargerName').textContent = chargerName;
+        document.getElementById('startTime').textContent = `${date} ${time}`;
+        document.getElementById('endTime').textContent = endTime;
+        document.getElementById('duration').textContent = formatDuration(durationMinutes);
+        document.getElementById('energyAmount').textContent = `${energy} kWh`;
+        document.getElementById('chargeAmount').textContent = `${energy} kWh`;
+
+        // 页面加载时强制设置为英文（覆盖旧的中文设置）
+        localStorage.setItem('preferredLanguage', 'English');
+        const savedLanguage = 'English';
+        updateLanguage(savedLanguage);
+
+        // 菜单栏导航
+        function navigateTo(page) {
+            if (page === 'device') {
+                // 跳转到设备详情页面
+                window.location.href = 'device-detail.html';
+            } else if (page === 'record') {
+                // 跳转到记录列表页面
+                window.location.href = 'records.html';
+            } else if (page === 'me') {
+                // 跳转到我的页面
+                window.location.href = 'profile-3menu.html';
+            }
+        }
+
+        // 完成按钮跳转
+        function goToSearch() {
+            window.location.href = 'search.html';
+        }
+    </script>
+</body>
+</html>

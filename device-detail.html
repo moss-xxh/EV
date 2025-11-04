@@ -1391,8 +1391,8 @@
                         <!-- 档位选择器（在白色卡片内） -->
                         <div class="gear-selector">
                             <div class="gear-label-container">
-                                <div class="gear-label">充电电流 (A)</div>
-                                <div class="gear-hint">过高的充电电流可能造成跳闸</div>
+                                <div class="gear-label">入户电流</div>
+                                <div class="gear-hint">请根据空开电流设置。过高电流可能造成跳闸</div>
                             </div>
                             <div class="gear-options">
                                 <div class="gear-option" data-gear="1" onclick="selectGear(1)">
@@ -1513,8 +1513,8 @@
                 disconnectMsg: '确定要断开与设备的连接吗？',
                 disconnect: '断开',
                 cancel: '取消',
-                chargingCurrent: '充电电流 (A)',
-                currentWarning: '过高的充电电流可能造成跳闸',
+                chargingCurrent: '入户电流',
+                currentWarning: '请根据空开电流设置。过高电流可能造成跳闸',
                 back: '返回',
                 chargeTip: '如果点击无反应请前往i.charges app选择模式为plc'
             },
@@ -1545,8 +1545,8 @@
                 disconnectMsg: '確定要斷開與設備的連接嗎？',
                 disconnect: '斷開',
                 cancel: '取消',
-                chargingCurrent: '充電電流 (A)',
-                currentWarning: '過高的充電電流可能造成跳閘',
+                chargingCurrent: '入戶電流',
+                currentWarning: '請根據空開電流設置。過高電流可能造成跳閘',
                 back: '返回',
                 chargeTip: '如果點擊無反應請前往i.charges app選擇模式為plc'
             },
@@ -1577,8 +1577,8 @@
                 disconnectMsg: 'Are you sure you want to disconnect from the device?',
                 disconnect: 'Disconnect',
                 cancel: 'Cancel',
-                chargingCurrent: 'Charging Current (A)',
-                currentWarning: 'High charging current may cause circuit breaker to trip',
+                chargingCurrent: 'Incoming Current',
+                currentWarning: 'Please set according to circuit breaker rating. High current may cause circuit breaker to trip',
                 back: 'Back',
                 chargeTip: 'If no response when clicking, please go to i.charges app and select PLC mode'
             }
@@ -2043,34 +2043,51 @@
 
         // 执行停止充电
         function executeStopCharging() {
-            isCharging = false;
+            try {
+                console.log('=== 开始执行停止充电 ===');
 
-            // 停止定时器
-            if (chargingTimer) {
-                clearInterval(chargingTimer);
-                chargingTimer = null;
+                // 检查开始时间是否有效
+                if (!currentChargeStartTime) {
+                    console.error('充电开始时间无效，使用当前时间');
+                    currentChargeStartTime = new Date();
+                }
+
+                // 计算充电时长和电量
+                const endTime = new Date();
+                const durationMinutes = Math.floor((endTime - currentChargeStartTime) / 1000 / 60);
+
+                // 根据当前档位计算充电量
+                const powerKW = gearPowers[currentGear];
+                const chargedEnergyRaw = (durationMinutes / 60) * powerKW;
+                const chargedEnergy = Math.min(20, Math.max(10, chargedEnergyRaw)).toFixed(1);
+
+                // 获取开始时间信息
+                const startDate = currentChargeStartTime.toISOString().split('T')[0];
+                const startHour = String(currentChargeStartTime.getHours()).padStart(2, '0');
+                const startMinute = String(currentChargeStartTime.getMinutes()).padStart(2, '0');
+                const startTime = `${startHour}:${startMinute}`;
+
+                console.log(`充电数据: 时长=${durationMinutes}分钟, 电量=${chargedEnergy}kWh, 日期=${startDate}, 时间=${startTime}`);
+
+                // 构建跳转URL
+                const detailUrl = `charge-record-detail-copy.html?charger=${encodeURIComponent(deviceID)}&date=${startDate}&time=${startTime}&duration=${durationMinutes}&energy=${chargedEnergy}`;
+                console.log('跳转URL:', detailUrl);
+
+                // 停止充电状态
+                isCharging = false;
+                if (chargingTimer) {
+                    clearInterval(chargingTimer);
+                    chargingTimer = null;
+                }
+                localStorage.removeItem('chargingStatus');
+
+                // 立即跳转
+                window.location.href = detailUrl;
+            } catch (error) {
+                console.error('停止充电时发生错误:', error);
+                // 即使发生错误也尝试跳转到空白记录页
+                window.location.href = 'charge-record-detail-copy.html?charger=' + encodeURIComponent(deviceID);
             }
-
-            // 计算充电时长和电量
-            const endTime = new Date();
-            const durationMinutes = Math.floor((endTime - currentChargeStartTime) / 1000 / 60);
-            const chargedEnergy = Math.floor(durationMinutes * 0.6 * 10) / 10;
-
-            console.log(`充电结束，时长: ${durationMinutes}分钟，充电量: ${chargedEnergy} kWh`);
-
-            // 清除 localStorage 中的充电状态
-            localStorage.removeItem('chargingStatus');
-
-            // 切换UI状态 - 隐藏全屏充电界面
-            document.getElementById('chargingState').classList.remove('active');
-            document.getElementById('chargingState').classList.add('hidden');
-
-            // 重置显示
-            document.getElementById('chargingDuration').textContent = '00:00:00';
-            document.getElementById('chargedEnergy').textContent = '0 kWh';
-
-            // TODO: 这里可以保存充电记录到服务器
-            currentChargeStartTime = null;
         }
 
         // 返回上一页
