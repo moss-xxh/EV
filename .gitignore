@@ -24,11 +24,3 @@ Temporary Items
 
 # Spec workflow
 .spec-workflow/
-
-# Reference images
-参考图.jpg
-*.jpg
-*.jpeg
-*.png
-!logo.png
-!充电.png
