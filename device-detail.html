@@ -1972,17 +1972,21 @@
 
         // 更新实时电流显示
         function updateCurrentDisplay() {
-            // 汽车实际电流 = 档位设置电流 - (1到2的随机值)
-            const gearCurrent = gearCurrents[currentGear];
-            const carCurrentReduction = 1 + Math.random(); // 1-2之间的随机数
-            const carCurrent = Math.round((gearCurrent - carCurrentReduction) * 10) / 10; // 保留一位小数
+            // 充电桩总电流 = 用户选择的档位电流（这是用户控制的）
+            const totalCurrent = gearCurrents[currentGear];
 
-            // 房子电流在 14-16A 之间变动（家用负载）
-            const houseCurrentVariation = 14 + Math.random() * 2; // 14-16之间的随机数
-            const houseCurrent = Math.round(houseCurrentVariation * 10) / 10; // 保留一位小数
+            // 将总电流大致平均分配给汽车和空调，加入小的随机波动
+            // 基础分配：各占一半
+            const halfCurrent = totalCurrent / 2;
 
-            // 充电桩总电流 = 汽车电流 + 房子电流
-            const totalCurrent = carCurrent + houseCurrent;
+            // 添加小范围随机波动（±2A之内），使显示更自然
+            const randomVariation = (Math.random() - 0.5) * 4; // -2到+2之间的随机数
+
+            // 汽车电流 = 一半 + 随机波动
+            const carCurrent = Math.round((halfCurrent + randomVariation) * 10) / 10;
+
+            // 空调电流 = 总电流 - 汽车电流（确保两者之和严格等于总电流）
+            const houseCurrent = Math.round((totalCurrent - carCurrent) * 10) / 10;
 
             // 更新SVG中的电流文本
             const pileCurrentEl = document.getElementById('pileCurrent');
