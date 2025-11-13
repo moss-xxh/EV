@@ -286,6 +286,22 @@
             font-weight: 300;
         }
 
+        /* NEW 标识 */
+        .new-badge {
+            display: inline-block;
+            background: #FF3B30;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .new-badge.hidden {
+            display: none;
+        }
+
         /* 遮罩层 */
         .overlay {
             position: absolute;
@@ -637,6 +653,21 @@
                             </div>
                             <div class="menu-value">English</div>
                         </div>
+                        <div class="menu-item" id="otaUpgrade">
+                            <div class="menu-item-left">
+                                <div class="menu-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
+                                </div>
+                                <div class="menu-label">OTA升级</div>
+                            </div>
+                            <div class="menu-value">
+                                <span class="new-badge" id="otaNewBadge">NEW</span>
+                            </div>
+                        </div>
                         <div class="menu-item" id="privacyItem">
                             <div class="menu-item-left">
                                 <div class="menu-icon">
@@ -725,6 +756,7 @@
             '中文': {
                 pageTitle: '我的',
                 languageSwitch: '语言切换',
+                otaUpgrade: 'OTA升级',
                 privacyPolicy: '隐私协议',
                 navSearch: '充电桩',
                 navRecord: '记录',
@@ -782,6 +814,7 @@
             '繁體中文': {
                 pageTitle: '我的',
                 languageSwitch: '語言切換',
+                otaUpgrade: 'OTA升級',
                 privacyPolicy: '隱私協議',
                 navSearch: '充電樁',
                 navRecord: '記錄',
@@ -839,6 +872,7 @@
             'English': {
                 pageTitle: 'Me',
                 languageSwitch: 'Language',
+                otaUpgrade: 'OTA Upgrade',
                 privacyPolicy: 'Privacy Policy',
                 navSearch: 'Chargers',
                 navRecord: 'Records',
@@ -906,7 +940,8 @@
             // 更新菜单标签
             const menuLabels = document.querySelectorAll('.menu-label');
             menuLabels[0].textContent = texts.languageSwitch;
-            menuLabels[1].textContent = texts.privacyPolicy;
+            menuLabels[1].textContent = texts.otaUpgrade;
+            menuLabels[2].textContent = texts.privacyPolicy;
 
             // 更新导航标签
             const navLabels = document.querySelectorAll('.nav-label');
@@ -981,6 +1016,49 @@
                 }
             });
         }
+
+        // OTA 版本检查和 NEW 标识控制
+        function checkOTAVersion() {
+            // 版本号（实际应用中从设备获取）
+            const CURRENT_VERSION = '1.0.0';  // 修改这里测试不同情况
+            const LATEST_VERSION = '1.2.0';   // 修改这里测试不同情况
+
+            const otaNewBadge = document.getElementById('otaNewBadge');
+
+            if (CURRENT_VERSION === LATEST_VERSION) {
+                // 已是最新版本：隐藏 NEW 标识
+                otaNewBadge.classList.add('hidden');
+            } else {
+                // 需要升级：显示 NEW 标识
+                otaNewBadge.classList.remove('hidden');
+            }
+        }
+
+        // 页面加载时检查 OTA 版本
+        checkOTAVersion();
+
+        // OTA 升级跳转功能（区分单击和双击）
+        const otaUpgrade = document.getElementById('otaUpgrade');
+        let clickTimer = null;
+        let clickCount = 0;
+
+        otaUpgrade.addEventListener('click', function() {
+            clickCount++;
+
+            if (clickCount === 1) {
+                // 第一次点击，等待 300ms 判断是否为双击
+                clickTimer = setTimeout(function() {
+                    // 单击：跳转到需要升级的页面
+                    window.location.href = 'ota-upgrade.html?mode=upgrade';
+                    clickCount = 0;
+                }, 300);
+            } else if (clickCount === 2) {
+                // 双击：取消单击计时器，跳转到已是最新版本页面
+                clearTimeout(clickTimer);
+                window.location.href = 'ota-upgrade.html?mode=latest';
+                clickCount = 0;
+            }
+        });
 
         // 隐私协议抽屉功能
         const privacyItem = document.getElementById('privacyItem');
