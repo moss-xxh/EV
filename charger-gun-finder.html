@@ -456,6 +456,44 @@
             gap: 4px;
         }
 
+        .result-details {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 8px;
+            margin-left: 4px;
+        }
+
+        .status-normal {
+            background: #E8F5E9;
+            color: #34C759;
+        }
+
+        .status-mild {
+            background: #FFF3E0;
+            color: #FF9500;
+        }
+
+        .status-severe {
+            background: #FFEBEE;
+            color: #FF3B30;
+        }
+
         .signal-strength {
             display: flex;
             gap: 2px;
@@ -801,11 +839,11 @@
 
         // 模拟搜索到的充电桩设备
         const foundDevices = [
-            { id: '3847291650', name: '3847291650', signal: 'strong' },
-            { id: '5629384710', name: '5629384710', signal: 'strong' },
-            { id: '7294618503', name: '7294618503', signal: 'strong' },
-            { id: '1856032749', name: '1856032749', signal: 'medium' },
-            { id: '9340571628', name: '9340571628', signal: 'strong' }
+            { id: '3847291650', name: '3847291650', signal: 'strong', snr: 45, attenuation: 12 },
+            { id: '5629384710', name: '5629384710', signal: 'strong', snr: 8, attenuation: 35 },
+            { id: '7294618503', name: '7294618503', signal: 'strong', snr: 15, attenuation: 8 },
+            { id: '1856032749', name: '1856032749', signal: 'medium', snr: 4, attenuation: 85 },
+            { id: '9340571628', name: '9340571628', signal: 'strong', snr: 12, attenuation: 25 }
         ];
 
         // 页面元素
@@ -835,6 +873,28 @@
             return savedChargers.some(c => c.id === deviceId);
         }
 
+        // 获取信噪比状态
+        function getSnrStatus(snr) {
+            if (snr >= 10) {
+                return { label: '正常', class: 'status-normal' };
+            } else if (snr >= 5) {
+                return { label: '轻度', class: 'status-mild' };
+            } else {
+                return { label: '重度', class: 'status-severe' };
+            }
+        }
+
+        // 获取衰减值状态
+        function getAttenuationStatus(attenuation) {
+            if (attenuation <= 30) {
+                return { label: '正常', class: 'status-normal' };
+            } else if (attenuation <= 80) {
+                return { label: '轻度', class: 'status-mild' };
+            } else {
+                return { label: '重度', class: 'status-severe' };
+            }
+        }
+
         // 渲染搜索结果
         function renderSearchResults() {
             const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
@@ -848,12 +908,25 @@
                 const resultItem = document.createElement('div');
                 resultItem.className = 'result-item';
 
+                const snrStatus = getSnrStatus(device.snr);
+                const attenuationStatus = getAttenuationStatus(device.attenuation);
+
                 resultItem.innerHTML = `
                     <div class="result-icon">
                         <img src="充电.png" alt="充电桩">
                     </div>
                     <div class="result-info">
                         <div class="result-name">${device.name}</div>
+                        <div class="result-details">
+                            <div class="detail-item">
+                                信噪比: ${device.snr}dB
+                                <span class="status-badge ${snrStatus.class}">${snrStatus.label}</span>
+                            </div>
+                            <div class="detail-item">
+                                衰减值: ${device.attenuation}dB
+                                <span class="status-badge ${attenuationStatus.class}">${attenuationStatus.label}</span>
+                            </div>
+                        </div>
                     </div>
                     <button class="add-btn ${isAdded ? 'added' : ''}" data-id="${device.id}">
                         ${isAdded ? texts.added : texts.add}

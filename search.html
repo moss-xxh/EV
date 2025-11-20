@@ -264,7 +264,24 @@
         .search-nearby-content {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .search-nearby-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .search-nearby-icon img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
         }
 
         .search-nearby-info {
@@ -276,7 +293,6 @@
             font-size: 18px;
             font-weight: 600;
             color: #fff;
-            margin-bottom: 6px;
         }
 
         .search-nearby-subtitle {
@@ -284,20 +300,18 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        .search-nearby-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .search-nearby-arrow {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
         }
 
-        .search-nearby-icon img {
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
+        .search-nearby-arrow svg {
+            width: 100%;
+            height: 100%;
+            stroke: rgba(255, 255, 255, 0.6);
+            fill: none;
+            stroke-width: 2.5;
         }
 
         /* 充电桩列表容器 */
@@ -392,6 +406,13 @@
             font-size: 17px;
             font-weight: 600;
             color: #000;
+            margin-bottom: 4px;
+        }
+
+        .charger-version {
+            font-size: 12px;
+            font-weight: 400;
+            color: #8E8E93;
             margin-bottom: 6px;
         }
 
@@ -739,11 +760,16 @@
                 <!-- 搜索附近充电桩按钮 -->
                 <button class="search-nearby-btn" id="searchNearbyBtn">
                     <div class="search-nearby-content">
+                        <div class="search-nearby-icon">
+                            <img src="充电.png" alt="充电桩">
+                        </div>
                         <div class="search-nearby-info">
                             <div class="search-nearby-title">搜索附近充电桩</div>
                         </div>
-                        <div class="search-nearby-icon">
-                            <img src="充电.png" alt="充电桩">
+                        <div class="search-nearby-arrow">
+                            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
                         </div>
                     </div>
                 </button>
@@ -1099,6 +1125,7 @@
                             </div>
                             <div class="charger-info">
                                 <div class="charger-name">${charger.name}</div>
+                                <div class="charger-version">V1.0</div>
                                 <div class="charger-status">
                                     ${statusHTML}
                                 </div>
