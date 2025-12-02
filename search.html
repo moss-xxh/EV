@@ -420,6 +420,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .status-row {
@@ -427,6 +428,142 @@
             align-items: center;
             gap: 6px;
             font-size: 13px;
+        }
+
+        .charger-current {
+            font-size: 13px;
+            color: #000;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+            flex-basis: 100%;
+        }
+
+        .charger-current-label {
+            color: #000;
+            font-weight: 500;
+        }
+
+        /* 系统信息栏 */
+        .system-info-bar {
+            background: rgba(0, 82, 204, 0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+
+        /* 总电流显示区域 */
+        .total-current-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 82, 204, 0.15);
+        }
+
+        .total-current-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .total-current-label {
+            font-size: 12px;
+            color: #8E8E93;
+            font-weight: 500;
+        }
+
+        .total-current-value {
+            font-size: 24px;
+            color: #0052CC;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* 子项信息行 */
+        .sub-items-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .info-group.left {
+            align-items: flex-start;
+        }
+
+        .info-group.right {
+            align-items: flex-end;
+        }
+
+        .info-group-label {
+            font-size: 11px;
+            color: #8E8E93;
+            font-weight: 500;
+        }
+
+        .info-group-value {
+            font-size: 18px;
+            color: #0052CC;
+            font-weight: 700;
+        }
+
+        /* 统一进度条 */
+        .unified-progress-container {
+            width: 100%;
+            padding: 0 4px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 82, 204, 0.15);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0052CC 0%, #0066FF 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .device-status {
@@ -774,6 +911,47 @@
                     </div>
                 </button>
 
+                <!-- 系统信息栏 -->
+                <div class="system-info-bar" id="systemInfoBar">
+                    <!-- 总电流 -->
+                    <div class="total-current-section">
+                        <div class="total-current-item">
+                            <div class="total-current-label">总电流</div>
+                            <div class="total-current-value" id="totalCurrentValue">32A</div>
+                        </div>
+                    </div>
+
+                    <!-- 子项信息 -->
+                    <div class="sub-items-info">
+                        <!-- 标签行 -->
+                        <div class="info-row">
+                            <div class="info-group left">
+                                <div class="info-group-label">充电桩</div>
+                            </div>
+                            <div class="info-group right">
+                                <div class="info-group-label">负载</div>
+                            </div>
+                        </div>
+
+                        <!-- 统一进度条 -->
+                        <div class="unified-progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="unifiedProgressFill" style="width: 75%"></div>
+                            </div>
+                        </div>
+
+                        <!-- 数值行 -->
+                        <div class="info-row">
+                            <div class="info-group left">
+                                <div class="info-group-value" id="gunCurrentValue">24A</div>
+                            </div>
+                            <div class="info-group right">
+                                <div class="info-group-value" id="loadValue">8A</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 充电桩列表容器（可滚动） -->
                 <div class="charger-list-container">
                     <!-- 充电桩列表 -->
@@ -876,7 +1054,11 @@
                 confirmDisconnect: '退出',
                 navChargers: '充电桩',
                 navRecords: '记录',
-                navMe: '我的'
+                navMe: '我的',
+                totalCurrent: '总电流',
+                charger: '充电桩',
+                load: '负载',
+                current: '电流'
             },
             '繁體中文': {
                 pageTitle: '充電樁',
@@ -896,7 +1078,11 @@
                 confirmDisconnect: '退出',
                 navChargers: '充電樁',
                 navRecords: '記錄',
-                navMe: '我的'
+                navMe: '我的',
+                totalCurrent: '總電流',
+                charger: '充電樁',
+                load: '負載',
+                current: '電流'
             },
             'English': {
                 pageTitle: 'Chargers',
@@ -916,7 +1102,11 @@
                 confirmDisconnect: 'Disconnect',
                 navChargers: 'Chargers',
                 navRecords: 'Records',
-                navMe: 'Me'
+                navMe: 'Me',
+                totalCurrent: 'Total Current',
+                charger: 'Charger',
+                load: 'Load',
+                current: 'Current'
             }
         };
 
@@ -959,8 +1149,35 @@
             navLabels[1].textContent = texts.navRecords;
             navLabels[2].textContent = texts.navMe;
 
+            // 更新系统信息栏标签
+            const totalCurrentLabel = document.querySelector('.total-current-label');
+            if (totalCurrentLabel) totalCurrentLabel.textContent = texts.totalCurrent;
+
+            const infoGroupLabels = document.querySelectorAll('.info-group-label');
+            if (infoGroupLabels[0]) infoGroupLabels[0].textContent = texts.charger;
+            if (infoGroupLabels[1]) infoGroupLabels[1].textContent = texts.load;
+
             // 重新渲染充电桩列表以更新状态文本
             renderChargerList();
+        }
+
+        // 更新系统信息和进度条
+        function updateSystemInfo() {
+            const totalCurrent = 32; // 总电流 32A
+            const gunCurrent = 24; // 充电桩电流 24A
+            const load = 8; // 负载电流 8A
+            // 验证：gunCurrent + load = totalCurrent (24A + 8A = 32A)
+
+            // 计算充电桩电流使用百分比（相对于总电流）
+            const gunPercentage = Math.round((gunCurrent / totalCurrent) * 100);
+
+            // 更新显示
+            document.getElementById('totalCurrentValue').textContent = totalCurrent + 'A';
+            document.getElementById('gunCurrentValue').textContent = gunCurrent + 'A';
+            document.getElementById('loadValue').textContent = load + 'A';
+
+            // 统一进度条显示充电桩电流的占比
+            document.getElementById('unifiedProgressFill').style.width = gunPercentage + '%';
         }
 
         // 获取当前正在充电的设备ID
@@ -1017,19 +1234,6 @@
         }
 
         let savedChargers = getSavedChargers();
-
-        // 强制修复数据：确保设备 5629384710 显示为 busy 状态
-        (function fixLegacyData() {
-            const device5629 = savedChargers.find(c => c.id === '5629384710');
-            if (device5629) {
-                // 强制设置为 busy 状态并添加档位
-                device5629.usageStatus = 'busy';
-                device5629.gear = 3;
-                device5629.deviceStatus = 'online';
-                saveChargers(savedChargers);
-                console.log('已强制修复设备 5629384710 状态为 busy');
-            }
-        })();
 
         // 页面元素
         const chargerList = document.getElementById('chargerList');
@@ -1098,7 +1302,17 @@
                             `;
                         }
 
-                        statusHTML = deviceStatusHTML + usageStatusHTML;
+                        // 电流显示 - 独立一行
+                        // 使用中显示12A（充电桩电流24A的1/2），空闲显示--
+                        const currentValue = charger.usageStatus === 'busy' ? '12A' : '--';
+                        const currentHTML = `
+                            <div class="charger-current">
+                                <span class="charger-current-label">${texts.current}:</span>
+                                <span>${currentValue}</span>
+                            </div>
+                        `;
+
+                        statusHTML = deviceStatusHTML + usageStatusHTML + currentHTML;
                     }
 
                     // 只有在线设备才显示删除按钮
@@ -1355,6 +1569,13 @@
         // 初始化页面
         console.log('页面初始化，当前设备列表：', savedChargers);
         renderChargerList();
+        updateSystemInfo(); // 初始化系统信息栏
+
+        // 定时更新系统信息（模拟实时数据）
+        setInterval(function() {
+            // 这里可以根据实际充电状态动态更新数据
+            updateSystemInfo();
+        }, 5000); // 每5秒更新一次
     </script>
 </body>
 </html>
