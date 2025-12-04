@@ -186,7 +186,7 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 0 16px 110px 16px;
+            padding: 0 16px 30px 16px;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -635,10 +635,12 @@
         .charging-data-card {
             background: #fff;
             border-radius: 24px 24px 0 0;
-            padding: 24px 20px 140px;
+            padding: 24px 20px 30px;
             position: relative;
             margin-top: 20px;
-            min-height: 220px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             z-index: 10;
         }
 
@@ -779,7 +781,7 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 22px;
-            display: flex;
+            display: none;
             justify-content: space-around;
             padding: 10px 16px;
             position: absolute;
@@ -1388,34 +1390,6 @@
 
                     <!-- 底部数据卡片 -->
                     <div class="charging-data-card">
-                        <!-- 档位选择器（在白色卡片内） -->
-                        <div class="gear-selector">
-                            <div class="gear-label-container">
-                                <div class="gear-label">入户电流</div>
-                                <div class="gear-hint">请根据空开电流设置。过高电流可能造成跳闸</div>
-                            </div>
-                            <div class="gear-options">
-                                <div class="gear-option" data-gear="1" onclick="selectGear(1)">
-                                    <div class="gear-number">20</div>
-                                </div>
-                                <div class="gear-option" data-gear="2" onclick="selectGear(2)">
-                                    <div class="gear-number">25</div>
-                                </div>
-                                <div class="gear-option selected" data-gear="3" onclick="selectGear(3)">
-                                    <div class="gear-number">32</div>
-                                </div>
-                                <div class="gear-option" data-gear="4" onclick="selectGear(4)">
-                                    <div class="gear-number">40</div>
-                                </div>
-                                <div class="gear-option" data-gear="5" onclick="selectGear(5)">
-                                    <div class="gear-number">50</div>
-                                </div>
-                                <div class="gear-option" data-gear="6" onclick="selectGear(6)">
-                                    <div class="gear-number">63</div>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="charging-data-list">
                             <div class="data-item">
                                 <div class="data-label">充电时长</div>
@@ -1435,7 +1409,7 @@
 
             <!-- 底部菜单栏 -->
             <div class="bottom-nav">
-                <div class="nav-item active" onclick="navigateTo('search')">
+                <div class="nav-item" onclick="navigateTo('search')">
                     <div class="nav-icon">
                         <svg viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="8"/>
@@ -1473,12 +1447,12 @@
     <div class="confirm-dialog-overlay" id="confirmDialog">
         <div class="confirm-dialog">
             <div class="dialog-content">
-                <div class="dialog-title" id="dialogTitle">确认操作</div>
-                <div class="dialog-message" id="dialogMessage">确定要执行此操作吗？</div>
+                <div class="dialog-title" id="dialogTitle">Confirm</div>
+                <div class="dialog-message" id="dialogMessage">Are you sure?</div>
             </div>
             <div class="dialog-buttons">
-                <button class="dialog-btn dialog-btn-cancel" onclick="hideDialog()">取消</button>
-                <button class="dialog-btn dialog-btn-confirm" id="dialogConfirmBtn" onclick="confirmAction()">确认</button>
+                <button class="dialog-btn dialog-btn-cancel" onclick="hideDialog()">Cancel</button>
+                <button class="dialog-btn dialog-btn-confirm" id="dialogConfirmBtn" onclick="confirmAction()">Confirm</button>
             </div>
         </div>
     </div>
@@ -1685,11 +1659,17 @@
         function selectGear(gear) {
             currentGear = gear;
 
-            // 更新UI
-            document.querySelectorAll('.gear-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            document.querySelector(`.gear-option[data-gear="${gear}"]`).classList.add('selected');
+            // 更新UI(如果档位选择器存在的话)
+            const gearOptions = document.querySelectorAll('.gear-option');
+            if (gearOptions.length > 0) {
+                gearOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                const targetOption = document.querySelector(`.gear-option[data-gear="${gear}"]`);
+                if (targetOption) {
+                    targetOption.classList.add('selected');
+                }
+            }
 
             // 如果正在充电,更新localStorage中的档位信息
             if (isCharging) {
@@ -1800,15 +1780,15 @@
                     isCharging = true;
                     currentChargeStartTime = new Date(chargingData.startTime);
 
-                    // 恢复档位
+                    // 先切换UI状态 - 显示充电界面(这样档位元素才存在)
+                    document.getElementById('chargingState').classList.remove('hidden');
+                    document.getElementById('chargingState').classList.add('active');
+
+                    // 恢复档位(必须在充电界面显示之后,否则找不到档位元素)
                     if (chargingData.gear) {
                         currentGear = chargingData.gear;
                         selectGear(currentGear);
                     }
-
-                    // 切换UI状态 - 显示充电界面
-                    document.getElementById('chargingState').classList.remove('hidden');
-                    document.getElementById('chargingState').classList.add('active');
 
                     // 立即更新一次充电数据
                     updateChargingData();
@@ -1823,7 +1803,7 @@
                 }
             } catch (error) {
                 console.error('恢复充电状态失败:', error);
-                localStorage.removeItem('chargingStatus');
+                // 不要删除充电状态!只是记录错误
             }
         }
 
