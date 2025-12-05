@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chargers - i.EV</title>
+    <title>充电桩 - 移动充电</title>
     <style>
         * {
             margin: 0;
@@ -204,7 +204,7 @@
 
         /* 页面标题 */
         .page-title {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 700;
             color: #000;
             margin-bottom: 16px;
@@ -217,6 +217,46 @@
 
         .page-title-text {
             flex: 1;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .title-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .title-search-btn {
+            background: #0052CC;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            box-shadow: 0 2px 8px rgba(0, 82, 204, 0.25);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title-search-btn:active {
+            transform: scale(0.9);
+            background: #003B99;
+            box-shadow: 0 1px 4px rgba(0, 82, 204, 0.3);
+        }
+
+        .title-search-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .title-disconnect-btn {
@@ -255,80 +295,9 @@
             stroke-linejoin: round;
         }
 
-        /* 搜索附近充电桩按钮 */
-        .search-nearby-btn {
-            background: linear-gradient(135deg, #0052CC 0%, #003B99 100%);
-            border-radius: 16px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 16px rgba(0, 82, 204, 0.3);
-            border: none;
-            width: 100%;
-            margin-bottom: 24px;
-            flex-shrink: 0;
-        }
-
-        .search-nearby-btn:active {
-            transform: scale(0.98);
-        }
-
-        .search-nearby-content {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .search-nearby-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .search-nearby-icon img {
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
-        }
-
-        .search-nearby-info {
-            flex: 1;
-            text-align: left;
-        }
-
-        .search-nearby-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .search-nearby-subtitle {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .search-nearby-arrow {
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-        }
-
-        .search-nearby-arrow svg {
-            width: 100%;
-            height: 100%;
-            stroke: rgba(255, 255, 255, 0.6);
-            fill: none;
-            stroke-width: 2.5;
-        }
-
         /* 入户电流设置卡片 - 使用档位选择器样式 */
         .current-setting-card {
-            background: #fff;
+            background: #F0F8FF;
             border-radius: 16px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -372,7 +341,7 @@
         .current-options,
         .gear-options {
             display: flex;
-            background: #F5F5F5;
+            background: #fff;
             border-radius: 20px;
             padding: 3px;
             gap: 3px;
@@ -383,7 +352,7 @@
             flex: 1;
             min-width: 0;
             padding: 8px 6px;
-            background: transparent;
+            background: #fff;
             border: none;
             border-radius: 17px;
             display: flex;
@@ -435,20 +404,7 @@
         /* 充电桩列表容器 */
         .charger-list-container {
             flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
             padding-bottom: 100px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* 隐藏滚动条 */
-        .charger-list-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .charger-list-container {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
         }
 
         /* 充电桩列表 */
@@ -975,6 +931,55 @@
             font-weight: 600;
             border-left: 0.5px solid rgba(60, 60, 67, 0.18);
         }
+
+        /* 电流分配图样式 */
+        .current-flow-diagram {
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .current-flow-diagram svg {
+            width: 100%;
+            height: auto;
+        }
+
+        /* 电流标签样式 */
+        .current-label {
+            font-size: 16px;
+            font-weight: 700;
+            fill: #0052CC;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+        }
+
+        .total-current-label {
+            font-size: 20px;
+            font-weight: 700;
+            fill: #0052CC;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+        }
+
+        /* 指示灯闪烁动画 */
+        .indicator-light {
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        .indicator-light:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .indicator-light:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 电流流动点样式 */
+        .flow-dot {
+            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
+        }
     </style>
 </head>
 <body>
@@ -1004,34 +1009,227 @@
                 <!-- 页面标题 -->
                 <div class="page-title">
                     <h1 class="page-title-text">充电桩</h1>
-                    <button class="title-disconnect-btn" id="titleDisconnectBtn">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
-                            <line x1="12" y1="2" x2="12" y2="12"/>
-                        </svg>
-                    </button>
+                    <div class="title-buttons">
+                        <button class="title-search-btn" id="titleSearchBtn">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                        </button>
+                        <button class="title-disconnect-btn" id="titleDisconnectBtn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                                <line x1="12" y1="2" x2="12" y2="12"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- 搜索附近充电桩按钮 -->
-                <button class="search-nearby-btn" id="searchNearbyBtn">
-                    <div class="search-nearby-content">
-                        <div class="search-nearby-icon">
-                            <img src="充电.png" alt="充电桩">
-                        </div>
-                        <div class="search-nearby-info">
-                            <div class="search-nearby-title">搜索附近充电桩</div>
-                        </div>
-                        <div class="search-nearby-arrow">
-                            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 18l6-6-6-6"/>
-                            </svg>
-                        </div>
-                    </div>
-                </button>
-
-                <!-- 入户电流设置与系统信息整合卡片 -->
+                <!-- 入户电流设置卡片 -->
                 <div class="current-setting-card">
-                    <!-- 入户电流设置 -->
+                    <!-- SVG电流分配图 - 放在顶部 -->
+                    <div class="current-flow-diagram">
+                        <svg viewBox="0 -15 340 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+                            <!-- 充电枪1(左边) -->
+                            <g id="gunGroup" transform="translate(0, 0)">
+                                <!-- 充电枪蓝色背景色块 -->
+                                <rect x="25" y="5" width="70" height="50" rx="6"
+                                      fill="#0052CC"
+                                      stroke="#0052CC"
+                                      stroke-width="2"
+                                      opacity="0.9"/>
+
+                                <!-- 充电枪建模图片 - 显示在色块上面 -->
+                                <image x="30" y="10" width="60" height="40" href="充电枪建模.jpg" preserveAspectRatio="xMidYMid meet" opacity="1"/>
+
+                                <!-- 充电口(底部中央)-->
+                                <g transform="translate(60, 70)">
+                                    <circle cx="0" cy="0" r="4" fill="#0052CC" opacity="1"/>
+                                    <circle cx="0" cy="0" r="2.8" fill="#34C759" opacity="0.9">
+                                        <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <!-- 充电口强光晕 -->
+                                    <circle cx="0" cy="0" r="6" fill="none" stroke="#FFD60A" stroke-width="2" opacity="0.6">
+                                        <animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+
+                                <!-- 充电枪电流标注 -->
+                                <text id="gunCurrentText" x="60" y="0" text-anchor="middle" fill="#0052CC" font-size="13" font-weight="700" opacity="0.95">16.1A</text>
+                            </g>
+
+                            <!-- 充电枪2(中间) -->
+                            <g id="gunGroup2" transform="translate(120, 0)">
+                                <!-- 充电枪蓝色背景色块 -->
+                                <rect x="25" y="5" width="70" height="50" rx="6"
+                                      fill="#0052CC"
+                                      stroke="#0052CC"
+                                      stroke-width="2"
+                                      opacity="0.9"/>
+
+                                <!-- 充电枪建模图片 - 显示在色块上面 -->
+                                <image x="30" y="10" width="60" height="40" href="充电枪建模.jpg" preserveAspectRatio="xMidYMid meet" opacity="1"/>
+
+                                <!-- 充电口(底部中央)-->
+                                <g transform="translate(60, 70)">
+                                    <circle cx="0" cy="0" r="4" fill="#0052CC" opacity="1"/>
+                                    <circle cx="0" cy="0" r="2.8" fill="#34C759" opacity="0.9">
+                                        <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <!-- 充电口强光晕 -->
+                                    <circle cx="0" cy="0" r="6" fill="none" stroke="#FFD60A" stroke-width="2" opacity="0.6">
+                                        <animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+
+                                <!-- 充电枪电流标注 -->
+                                <text id="gunCurrentText2" x="60" y="0" text-anchor="middle" fill="#0052CC" font-size="13" font-weight="700" opacity="0.95">12.0A</text>
+                            </g>
+
+                            <!-- 负载/空调(右边) -->
+                            <g id="loadGroup" transform="translate(240, 0)">
+                                <!-- 空调黄色背景色块 -->
+                                <rect x="15" y="5" width="70" height="50" rx="6"
+                                      fill="#FFD60A"
+                                      stroke="#FFD60A"
+                                      stroke-width="2"
+                                      opacity="0.9"/>
+
+                                <!-- 空调图片 - 显示在色块上面 -->
+                                <image x="20" y="10" width="60" height="40" href="空调.png" preserveAspectRatio="xMidYMid meet" opacity="1"/>
+
+                                <!-- 电源接入点(底部中央) -->
+                                <g transform="translate(50, 70)">
+                                    <circle cx="0" cy="0" r="3" fill="#0052CC" opacity="1"/>
+                                    <circle cx="0" cy="0" r="2" fill="#FFD60A" opacity="0.9">
+                                        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+
+                                <!-- 负载电流标注 -->
+                                <text id="loadCurrentText" x="50" y="0" text-anchor="middle" fill="#0052CC" font-size="13" font-weight="700" opacity="0.95">15.9A</text>
+                            </g>
+
+                            <!-- 充电线缆1 - 从充电枪1向下带圆角拐弯到充电桩 -->
+                            <path d="M 60 70 L 60 195 Q 60 210, 75 210 L 157.5 210"
+                                  stroke="#0052CC"
+                                  stroke-width="4"
+                                  fill="none"
+                                  opacity="0.9"
+                                  stroke-linecap="round"/>
+
+                            <!-- 充电线缆1光效 -->
+                            <path d="M 60 70 L 60 195 Q 60 210, 75 210 L 157.5 210"
+                                  stroke="#34C759"
+                                  stroke-width="2"
+                                  fill="none"
+                                  opacity="0.5"
+                                  stroke-linecap="round"/>
+
+                            <!-- 能量粒子流动1 - 从充电桩到充电枪1 -->
+                            <g>
+                                <!-- 粒子1 -->
+                                <circle r="3" fill="#34C759" opacity="0.9">
+                                    <animateMotion dur="2s" repeatCount="indefinite" path="M 157.5 210 L 75 210 Q 60 210, 60 195 L 60 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite"/>
+                                </circle>
+                                <!-- 粒子2 -->
+                                <circle r="2.5" fill="#34C759" opacity="0.9">
+                                    <animateMotion dur="2s" begin="0.3s" repeatCount="indefinite" path="M 157.5 210 L 75 210 Q 60 210, 60 195 L 60 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+                                </circle>
+                                <!-- 粒子3 -->
+                                <circle r="3.5" fill="#34C759" opacity="0.9">
+                                    <animateMotion dur="2s" begin="0.45s" repeatCount="indefinite" path="M 157.5 210 L 75 210 Q 60 210, 60 195 L 60 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="0.45s" repeatCount="indefinite"/>
+                                </circle>
+                            </g>
+
+                            <!-- 电源线缆 - 从负载向下带圆角拐弯到充电桩 -->
+                            <path d="M 290 70 L 290 195 Q 290 210, 275 210 L 177.5 210"
+                                  stroke="#0052CC"
+                                  stroke-width="4"
+                                  fill="none"
+                                  opacity="0.9"
+                                  stroke-linecap="round"/>
+
+                            <!-- 电源线缆光效 -->
+                            <path d="M 290 70 L 290 195 Q 290 210, 275 210 L 177.5 210"
+                                  stroke="#FFD60A"
+                                  stroke-width="2"
+                                  fill="none"
+                                  opacity="0.5"
+                                  stroke-linecap="round"/>
+
+                            <!-- 能量粒子流动 - 从充电桩到负载 -->
+                            <g>
+                                <!-- 粒子1 -->
+                                <circle r="3" fill="#FFD60A" opacity="0.9">
+                                    <animateMotion dur="2.5s" repeatCount="indefinite" path="M 177.5 210 L 275 210 Q 290 210, 290 195 L 290 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="2.5s" repeatCount="indefinite"/>
+                                </circle>
+                                <!-- 粒子2 -->
+                                <circle r="2.5" fill="#FFD60A" opacity="0.9">
+                                    <animateMotion dur="2.5s" begin="0.4s" repeatCount="indefinite" path="M 177.5 210 L 275 210 Q 290 210, 290 195 L 290 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="2.5s" begin="0.4s" repeatCount="indefinite"/>
+                                </circle>
+                                <!-- 粒子3 -->
+                                <circle r="3.5" fill="#FFD60A" opacity="0.9">
+                                    <animateMotion dur="2.5s" begin="0.8s" repeatCount="indefinite" path="M 177.5 210 L 275 210 Q 290 210, 290 195 L 290 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
+                                </circle>
+                            </g>
+
+                            <!-- 充电线缆2 - 从充电枪2向下垂直直连到充电桩 -->
+                            <path d="M 180 70 L 180 210"
+                                  stroke="#0052CC"
+                                  stroke-width="4"
+                                  fill="none"
+                                  opacity="0.9"
+                                  stroke-linecap="round"/>
+
+                            <!-- 充电线缆2光效 -->
+                            <path d="M 180 70 L 180 210"
+                                  stroke="#34C759"
+                                  stroke-width="2"
+                                  fill="none"
+                                  opacity="0.5"
+                                  stroke-linecap="round"/>
+
+                            <!-- 能量粒子流动2 - 从充电桩到充电枪2 -->
+                            <g>
+                                <!-- 粒子1 -->
+                                <circle r="3" fill="#34C759" opacity="0.9">
+                                    <animateMotion dur="1.8s" repeatCount="indefinite" path="M 180 210 L 180 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="1.8s" repeatCount="indefinite"/>
+                                </circle>
+                                <!-- 粒子2 -->
+                                <circle r="2.5" fill="#34C759" opacity="0.9">
+                                    <animateMotion dur="1.8s" begin="0.3s" repeatCount="indefinite" path="M 180 210 L 180 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="1.8s" begin="0.3s" repeatCount="indefinite"/>
+                                </circle>
+                                <!-- 粒子3 -->
+                                <circle r="3.5" fill="#34C759" opacity="0.9">
+                                    <animateMotion dur="1.8s" begin="0.45s" repeatCount="indefinite" path="M 180 210 L 180 70"/>
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="1.8s" begin="0.45s" repeatCount="indefinite"/>
+                                </circle>
+                            </g>
+
+                            <!-- 充电桩(中间底部) - N3正视图 -->
+                            <g transform="translate(117.5, 150)">
+                                <!-- N3正视图图片 -->
+                                <image x="27" y="25" width="46" height="74" href="N3.jpg" preserveAspectRatio="xMidYMid meet"/>
+
+                                <!-- 充电桩电流标注 -->
+                                <text id="pileCurrentText" x="50" y="110" text-anchor="middle" fill="#0052CC" font-size="13" font-weight="700" opacity="0.95">32.0A</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- 入户电流设置 - 放在SVG图下方 -->
                     <div class="gear-label-container">
                         <div class="gear-label">入户电流</div>
                         <div class="gear-hint">请根据空开电流设置。过高电流可能造成跳闸</div>
@@ -1054,38 +1252,6 @@
                         </div>
                         <div class="gear-option" data-gear="6" onclick="selectGear(6)">
                             <div class="gear-number">63</div>
-                        </div>
-                    </div>
-
-                    <!-- 系统信息 -->
-                    <div class="system-info-section" id="systemInfoBar">
-                        <!-- 总电流 -->
-                        <div class="total-current-section">
-                            <div class="total-current-item">
-                                <span class="total-current-label">总电流</span>
-                                <span class="total-current-value" id="totalCurrentValue">32A</span>
-                            </div>
-                        </div>
-
-                        <!-- 统一进度条（替代分割线）-->
-                        <div class="unified-progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="unifiedProgressFill" style="width: 75%"></div>
-                            </div>
-                        </div>
-
-                        <!-- 子项信息 -->
-                        <div class="sub-items-info">
-                            <div class="info-row">
-                                <div class="info-group left">
-                                    <span class="info-group-label">充电桩</span>
-                                    <span class="info-group-value" id="gunCurrentValue">24A</span>
-                                </div>
-                                <div class="info-group right">
-                                    <span class="info-group-label">负载</span>
-                                    <span class="info-group-value" id="loadValue">8A</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1283,10 +1449,7 @@
             // 更新页面标题
             document.querySelector('.page-title-text').textContent = texts.pageTitle;
 
-            // 断开连接按钮现在是图标，不需要更新文字
-
-            // 更新搜索按钮
-            document.querySelector('.search-nearby-title').textContent = texts.searchNearby;
+            // 断开连接按钮和搜索按钮都是图标，不需要更新文字
 
             // 更新空状态
             document.querySelector('.empty-title').textContent = texts.emptyTitle;
@@ -1314,13 +1477,6 @@
             navLabels[1].textContent = texts.navRecords;
             navLabels[2].textContent = texts.navMe;
 
-            // 更新系统信息栏标签
-            const totalCurrentLabel = document.querySelector('.total-current-label');
-            if (totalCurrentLabel) totalCurrentLabel.textContent = texts.totalCurrent;
-
-            const infoGroupLabels = document.querySelectorAll('.info-group-label');
-            if (infoGroupLabels[0]) infoGroupLabels[0].textContent = texts.charger;
-            if (infoGroupLabels[1]) infoGroupLabels[1].textContent = texts.load;
 
             // 更新入户电流设置卡片
             const gearLabel = document.querySelector('.gear-label');
@@ -1392,9 +1548,6 @@
             const currentValue = gearCurrents[currentGear];
             localStorage.setItem('incomingCurrent', currentValue);
 
-            // 更新系统信息显示
-            updateSystemInfo();
-
             console.log('切换到档位:', currentGear, '电流:', currentValue, 'A');
 
             // 关闭弹窗
@@ -1422,7 +1575,6 @@
         // 保存入户电流设置
         function saveIncomingCurrent(value) {
             localStorage.setItem('incomingCurrent', value);
-            updateSystemInfo(); // 更新系统信息显示
         }
 
         // 初始化入户电流选择器
@@ -1451,29 +1603,9 @@
             });
         }
 
-        // 更新系统信息和进度条
+        // 更新系统信息（保留函数但不再更新DOM，避免调用处报错）
         function updateSystemInfo() {
-            const incomingCurrent = getIncomingCurrent(); // 设置的入户电流
-
-            // 总电流比入户电流小0.8A（留有安全余量）
-            const totalCurrent = incomingCurrent - 0.8;
-
-            // 充电桩电流约为总电流的75%
-            const gunCurrent = Math.round(totalCurrent * 0.75);
-
-            // 负载电流 = 总电流 - 充电桩电流
-            const load = parseFloat((totalCurrent - gunCurrent).toFixed(1));
-
-            // 计算充电桩电流使用百分比（相对于总电流）
-            const gunPercentage = Math.round((gunCurrent / totalCurrent) * 100);
-
-            // 更新显示
-            document.getElementById('totalCurrentValue').textContent = totalCurrent.toFixed(1) + 'A';
-            document.getElementById('gunCurrentValue').textContent = gunCurrent + 'A';
-            document.getElementById('loadValue').textContent = load + 'A';
-
-            // 统一进度条显示充电桩电流的占比
-            document.getElementById('unifiedProgressFill').style.width = gunPercentage + '%';
+            // 系统信息区域已删除，此函数保留为空
         }
 
         // 获取当前正在充电的设备ID
@@ -1534,7 +1666,7 @@
         // 页面元素
         const chargerList = document.getElementById('chargerList');
         const emptyState = document.getElementById('emptyState');
-        const searchNearbyBtn = document.getElementById('searchNearbyBtn');
+        const titleSearchBtn = document.getElementById('titleSearchBtn');
         const overlay = document.getElementById('overlay');
         const deleteAlert = document.getElementById('deleteAlert');
         const cancelDelete = document.getElementById('cancelDelete');
@@ -1750,8 +1882,8 @@
             }
         }
 
-        // 搜索附近充电桩
-        searchNearbyBtn.addEventListener('click', function() {
+        // 标题搜索按钮 - 跳转到充电桩搜索页面
+        titleSearchBtn.addEventListener('click', function() {
             window.location.href = 'charger-gun-finder.html';
         });
 
@@ -1899,13 +2031,6 @@
         console.log('页面初始化，当前设备列表：', savedChargers);
         initCurrentSelector(); // 初始化入户电流选择器
         renderChargerList();
-        updateSystemInfo(); // 初始化系统信息栏
-
-        // 定时更新系统信息（模拟实时数据）
-        setInterval(function() {
-            // 这里可以根据实际充电状态动态更新数据
-            updateSystemInfo();
-        }, 5000); // 每5秒更新一次
     </script>
 </body>
 </html>
