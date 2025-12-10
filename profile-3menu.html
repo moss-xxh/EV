@@ -190,7 +190,7 @@
         }
 
         .page-title {
-            font-size: 34px;
+            font-size: 24px;
             font-weight: 700;
             color: #000;
         }
@@ -689,6 +689,17 @@
                     </div>
                     <div class="nav-label">记录</div>
                 </div>
+                <div class="nav-item" onclick="navigateTo('debug')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="8" width="18" height="12" rx="2"/>
+                            <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/>
+                            <line x1="12" y1="11" x2="12" y2="17"/>
+                            <line x1="9" y1="14" x2="15" y2="14"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">调试</div>
+                </div>
                 <div class="nav-item active">
                     <div class="nav-icon">
                         <svg viewBox="0 0 24 24">
@@ -744,6 +755,7 @@
                 privacyPolicy: '隐私协议',
                 navSearch: '充电桩',
                 navRecord: '记录',
+                navDebug: '调试',
                 navMe: '我的',
                 selectLanguage: '选择语言',
                 agreeBtn: '我已同意',
@@ -802,6 +814,7 @@
                 privacyPolicy: '隱私協議',
                 navSearch: '充電樁',
                 navRecord: '記錄',
+                navDebug: '調試',
                 navMe: '我的',
                 selectLanguage: '選擇語言',
                 agreeBtn: '我已同意',
@@ -860,6 +873,7 @@
                 privacyPolicy: 'Privacy Policy',
                 navSearch: 'Chargers',
                 navRecord: 'Records',
+                navDebug: 'Debug',
                 navMe: 'Me',
                 selectLanguage: 'Select Language',
                 agreeBtn: 'I Agree',
@@ -931,7 +945,8 @@
             const navLabels = document.querySelectorAll('.nav-label');
             navLabels[0].textContent = texts.navSearch;
             navLabels[1].textContent = texts.navRecord;
-            navLabels[2].textContent = texts.navMe;
+            navLabels[2].textContent = texts.navDebug;
+            navLabels[3].textContent = texts.navMe;
 
             // 更新抽屉标题
             document.getElementById('languageDrawerTitle').textContent = texts.selectLanguage;
@@ -1067,6 +1082,8 @@
                 window.location.href = 'search.html';
             } else if (page === 'record') {
                 window.location.href = 'records.html';
+            } else if (page === 'debug') {
+                window.location.href = 'debug.html';
             }
         }
     </script>

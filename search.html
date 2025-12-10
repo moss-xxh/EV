@@ -980,6 +980,315 @@
         .flow-dot {
             filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
         }
+
+        /* 调试抽屉样式 */
+        .debug-drawer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 20px 20px 45px 45px;
+            padding: 0;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 201;
+            max-height: 80%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .debug-drawer.active {
+            transform: translateY(0);
+        }
+
+        .debug-drawer .drawer-header {
+            padding: 20px 20px 0;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .debug-drawer .drawer-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        /* 标签菜单 */
+        .debug-tabs {
+            display: flex;
+            padding: 0 20px;
+            margin-top: 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+
+        .debug-tab {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 500;
+            color: #8E8E93;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .debug-tab.active {
+            color: #0052CC;
+            font-weight: 600;
+        }
+
+        .debug-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #0052CC;
+        }
+
+        /* 内容面板 */
+        .debug-panel {
+            display: none;
+        }
+
+        .debug-panel.active {
+            display: block;
+        }
+
+        .drawer-close {
+            width: 28px;
+            height: 28px;
+            background: #F2F2F7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #8E8E93;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .drawer-close:active {
+            transform: scale(0.9);
+            background: #E5E5EA;
+        }
+
+        .debug-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .debug-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .debug-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 调试模块样式 */
+        .debug-module {
+            background: #F5F5F5;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .refresh-btn {
+            width: 32px;
+            height: 32px;
+            background: #fff;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.9) rotate(180deg);
+        }
+
+        .refresh-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #0052CC;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* 参数列表样式 */
+        .param-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .param-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .param-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .param-input {
+            width: 100px;
+            height: 32px;
+            border: 1px solid #E5E5EA;
+            border-radius: 6px;
+            padding: 0 8px;
+            font-size: 14px;
+            text-align: right;
+            color: #0052CC;
+            font-weight: 600;
+        }
+
+        .param-input:focus {
+            outline: none;
+            border-color: #0052CC;
+        }
+
+        .save-btn {
+            width: 100%;
+            height: 44px;
+            background: #0052CC;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .save-btn:active {
+            transform: scale(0.98);
+            background: #003B99;
+        }
+
+        /* 设备卡片样式 */
+        .device-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .debug-device-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .debug-device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .debug-device-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .debug-device-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .debug-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34C759;
+        }
+
+        .debug-status-dot.offline {
+            background: #8E8E93;
+        }
+
+        .debug-status-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .debug-usage-badge {
+            background: #0052CC;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .debug-device-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .debug-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .debug-info-label {
+            color: #8E8E93;
+            font-weight: 500;
+        }
+
+        .debug-info-value {
+            color: #000;
+            font-weight: 600;
+        }
+
+        .debug-info-value.charging {
+            color: #0052CC;
+        }
     </style>
 </head>
 <body>
@@ -1294,6 +1603,17 @@
                     </div>
                     <div class="nav-label">记录</div>
                 </div>
+                <div class="nav-item" onclick="navigateTo('debug')">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="8" width="18" height="12" rx="2"/>
+                            <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/>
+                            <line x1="12" y1="11" x2="12" y2="17"/>
+                            <line x1="9" y1="14" x2="15" y2="14"/>
+                        </svg>
+                    </div>
+                    <div class="nav-label">调试</div>
+                </div>
                 <div class="nav-item" onclick="navigateTo('me')">
                     <div class="nav-icon">
                         <svg viewBox="0 0 24 24">
@@ -1346,6 +1666,68 @@
                     <button class="alert-button delete" id="confirmCurrentSetting">确认</button>
                 </div>
             </div>
+
+            <!-- 调试抽屉 -->
+            <div class="debug-drawer" id="debugDrawer">
+                <div class="drawer-header">
+                    <div class="drawer-title">调试</div>
+                    <div class="drawer-close" id="debugDrawerClose">×</div>
+                </div>
+
+                <!-- 标签菜单 -->
+                <div class="debug-tabs">
+                    <div class="debug-tab active" data-tab="meter">电表参数配置</div>
+                    <div class="debug-tab" data-tab="device">设备信息</div>
+                </div>
+
+                <!-- 内容区域 -->
+                <div class="debug-content">
+                    <!-- 电表参数配置内容 -->
+                    <div class="debug-panel active" id="meterPanel">
+                        <div class="debug-module">
+                            <div class="module-header">
+                                <button class="refresh-btn" id="meterRefreshBtn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="param-list">
+                                <div class="param-item">
+                                    <label class="param-label">电压系数</label>
+                                    <input type="number" class="param-input" id="voltageCoef" value="1.0" step="0.01">
+                                </div>
+                                <div class="param-item">
+                                    <label class="param-label">电流系数</label>
+                                    <input type="number" class="param-input" id="currentCoef" value="1.0" step="0.01">
+                                </div>
+                                <div class="param-item">
+                                    <label class="param-label">功率系数</label>
+                                    <input type="number" class="param-input" id="powerCoef" value="1.0" step="0.01">
+                                </div>
+                                <div class="param-item">
+                                    <label class="param-label">电能系数</label>
+                                    <input type="number" class="param-input" id="energyCoef" value="1.0" step="0.01">
+                                </div>
+                                <div class="param-item">
+                                    <label class="param-label">频率系数</label>
+                                    <input type="number" class="param-input" id="frequencyCoef" value="1.0" step="0.01">
+                                </div>
+                            </div>
+                            <button class="save-btn" id="saveMeterParams">保存参数</button>
+                        </div>
+                    </div>
+
+                    <!-- 设备信息内容 -->
+                    <div class="debug-panel" id="devicePanel">
+                        <div class="debug-module">
+                            <div class="device-cards" id="deviceCards">
+                                <!-- 设备卡片将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1371,6 +1753,7 @@
                 navChargers: '充电桩',
                 navRecords: '记录',
                 navMe: '我的',
+                navDebug: '调试',
                 totalCurrent: '总电流',
                 charger: '充电桩',
                 load: '负载',
@@ -1379,7 +1762,23 @@
                 currentWarning: '请根据空开电流设置。过高电流可能造成跳闸',
                 currentSettingTitle: '设置为',
                 currentSettingMessage: '请根据空开电流设置，过高可能跳闸',
-                confirm: '确认'
+                confirm: '确认',
+                debugTitle: '调试',
+                meterParams: '电表参数配置',
+                deviceInfo: '设备信息',
+                voltageCoef: '电压系数',
+                currentCoef: '电流系数',
+                powerCoef: '功率系数',
+                energyCoef: '电能系数',
+                frequencyCoef: '频率系数',
+                saveParams: '保存参数',
+                deviceName: '设备名称',
+                macAddress: 'MAC地址',
+                maxCurrent: '限制电流',
+                actualCurrent: '实际电流',
+                status: '状态',
+                charging: '充电中',
+                paramsSaved: '参数保存成功'
             },
             '繁體中文': {
                 pageTitle: '充電樁',
@@ -1400,6 +1799,7 @@
                 navChargers: '充電樁',
                 navRecords: '記錄',
                 navMe: '我的',
+                navDebug: '調試',
                 totalCurrent: '總電流',
                 charger: '充電樁',
                 load: '負載',
@@ -1408,7 +1808,23 @@
                 currentWarning: '請根據空開電流設置。過高電流可能造成跳閘',
                 currentSettingTitle: '設置為',
                 currentSettingMessage: '請根據空開電流設置，過高可能跳閘',
-                confirm: '確認'
+                confirm: '確認',
+                debugTitle: '調試',
+                meterParams: '電表參數配置',
+                deviceInfo: '設備信息',
+                voltageCoef: '電壓係數',
+                currentCoef: '電流係數',
+                powerCoef: '功率係數',
+                energyCoef: '電能係數',
+                frequencyCoef: '頻率係數',
+                saveParams: '保存參數',
+                deviceName: '設備名稱',
+                macAddress: 'MAC地址',
+                maxCurrent: '限制電流',
+                actualCurrent: '實際電流',
+                status: '狀態',
+                charging: '充電中',
+                paramsSaved: '參數保存成功'
             },
             'English': {
                 pageTitle: 'Chargers',
@@ -1429,6 +1845,7 @@
                 navChargers: 'Chargers',
                 navRecords: 'Records',
                 navMe: 'Me',
+                navDebug: 'Debug',
                 totalCurrent: 'Total Current',
                 charger: 'Charger',
                 load: 'Load',
@@ -1437,7 +1854,23 @@
                 currentWarning: 'Please set according to circuit breaker rating. High current may cause circuit breaker to trip',
                 currentSettingTitle: 'Set to',
                 currentSettingMessage: 'Set according to breaker rating. High current may trip.',
-                confirm: 'Confirm'
+                confirm: 'Confirm',
+                debugTitle: 'Debug',
+                meterParams: 'Meter Parameters',
+                deviceInfo: 'Device Information',
+                voltageCoef: 'Voltage Coef.',
+                currentCoef: 'Current Coef.',
+                powerCoef: 'Power Coef.',
+                energyCoef: 'Energy Coef.',
+                frequencyCoef: 'Frequency Coef.',
+                saveParams: 'Save Parameters',
+                deviceName: 'Device Name',
+                macAddress: 'MAC Address',
+                maxCurrent: 'Max Current',
+                actualCurrent: 'Actual Current',
+                status: 'Status',
+                charging: 'Charging',
+                paramsSaved: 'Parameters Saved'
             }
         };
 
@@ -1475,8 +1908,8 @@
             const navLabels = document.querySelectorAll('.nav-label');
             navLabels[0].textContent = texts.navChargers;
             navLabels[1].textContent = texts.navRecords;
-            navLabels[2].textContent = texts.navMe;
-
+            navLabels[2].textContent = texts.navDebug;
+            navLabels[3].textContent = texts.navMe;
 
             // 更新入户电流设置卡片
             const gearLabel = document.querySelector('.gear-label');
@@ -1486,6 +1919,9 @@
 
             // 更新入户电流设置确认弹窗按钮
             document.getElementById('confirmCurrentSetting').textContent = texts.confirm;
+
+            // 更新调试抽屉
+            updateDebugDrawerLanguage();
 
             // 重新渲染充电桩列表以更新状态文本
             renderChargerList();
@@ -1956,20 +2392,12 @@
             cancelCurrentSetting();
         });
 
-        // 点击遮罩层关闭弹窗
-        overlay.addEventListener('click', function() {
-            overlay.classList.remove('active');
-            deleteAlert.classList.remove('active');
-            document.getElementById('disconnectAlert').classList.remove('active');
-            document.getElementById('currentSettingAlert').classList.remove('active');
-            chargerToDelete = null;
-            pendingGear = null;
-        });
-
         // 底部导航
         function navigateTo(page) {
             if (page === 'record') {
                 window.location.href = 'records.html';
+            } else if (page === 'debug') {
+                window.location.href = 'debug.html';
             } else if (page === 'me') {
                 window.location.href = 'profile-3menu.html';
             }
@@ -2026,6 +2454,218 @@
 
             alert('数据已刷新，请查看控制台输出');
         };
+
+        // ====== 调试功能 ======
+
+        // 调试抽屉相关元素
+        const debugNavItem = document.getElementById('debugNavItem');
+        const debugDrawer = document.getElementById('debugDrawer');
+        const debugDrawerClose = document.getElementById('debugDrawerClose');
+        const meterRefreshBtn = document.getElementById('meterRefreshBtn');
+        const saveMeterParams = document.getElementById('saveMeterParams');
+
+        // 打开调试抽屉
+        debugNavItem.addEventListener('click', function() {
+            debugDrawer.classList.add('active');
+            overlay.classList.add('active');
+            loadMeterParams();
+            renderDebugDevices();
+
+            // 初始化标签切换
+            initDebugTabs();
+        });
+
+        // 关闭调试抽屉
+        function closeDebugDrawer() {
+            debugDrawer.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        debugDrawerClose.addEventListener('click', closeDebugDrawer);
+
+        // 修改overlay点击事件，添加关闭调试抽屉
+        overlay.addEventListener('click', function() {
+            overlay.classList.remove('active');
+            deleteAlert.classList.remove('active');
+            document.getElementById('disconnectAlert').classList.remove('active');
+            document.getElementById('currentSettingAlert').classList.remove('active');
+            debugDrawer.classList.remove('active');
+            chargerToDelete = null;
+            pendingGear = null;
+        });
+
+        // 加载电表参数
+        function loadMeterParams() {
+            const savedParams = localStorage.getItem('meterParams');
+            if (savedParams) {
+                const params = JSON.parse(savedParams);
+                document.getElementById('voltageCoef').value = params.voltage || 1.0;
+                document.getElementById('currentCoef').value = params.current || 1.0;
+                document.getElementById('powerCoef').value = params.power || 1.0;
+                document.getElementById('energyCoef').value = params.energy || 1.0;
+                document.getElementById('frequencyCoef').value = params.frequency || 1.0;
+            }
+        }
+
+        // 刷新电表参数
+        meterRefreshBtn.addEventListener('click', function() {
+            loadMeterParams();
+            // 添加旋转动画
+            meterRefreshBtn.style.transform = 'scale(0.9) rotate(180deg)';
+            setTimeout(() => {
+                meterRefreshBtn.style.transform = '';
+            }, 200);
+        });
+
+        // 保存电表参数
+        saveMeterParams.addEventListener('click', function() {
+            const params = {
+                voltage: parseFloat(document.getElementById('voltageCoef').value),
+                current: parseFloat(document.getElementById('currentCoef').value),
+                power: parseFloat(document.getElementById('powerCoef').value),
+                energy: parseFloat(document.getElementById('energyCoef').value),
+                frequency: parseFloat(document.getElementById('frequencyCoef').value)
+            };
+            localStorage.setItem('meterParams', JSON.stringify(params));
+
+            // 显示保存成功提示
+            const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
+            const texts = i18n[savedLanguage];
+            alert(texts.paramsSaved);
+        });
+
+        // 渲染设备信息卡片
+        function renderDebugDevices() {
+            const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
+            const texts = i18n[savedLanguage];
+            const deviceCards = document.getElementById('deviceCards');
+            deviceCards.innerHTML = '';
+
+            if (savedChargers.length === 0) {
+                deviceCards.innerHTML = `<p style="text-align: center; color: #8E8E93; padding: 20px;">${texts.emptyTitle}</p>`;
+                return;
+            }
+
+            savedChargers.forEach(charger => {
+                const isOnline = charger.deviceStatus === 'online';
+                const isBusy = charger.usageStatus === 'busy';
+
+                // 生成MAC地址（模拟）
+                const macAddress = 'AA:BB:CC:' + charger.id.substring(0, 2) + ':' + charger.id.substring(2, 4) + ':' + charger.id.substring(4, 6);
+
+                // 限制电流（固定为16A）
+                const maxCurrent = '16A';
+
+                // 实际电流（使用中显示12A，空闲显示0A）
+                const actualCurrent = isBusy ? '12A' : '0A';
+
+                // 状态显示
+                const statusText = isOnline ? texts.online : texts.offline;
+                const statusDotClass = isOnline ? '' : 'offline';
+
+                const card = document.createElement('div');
+                card.className = 'debug-device-card';
+                card.innerHTML = `
+                    <div class="debug-device-header">
+                        <div class="debug-device-name">
+                            ${charger.name}
+                            ${isBusy ? `<span class="debug-usage-badge">${texts.busy}</span>` : ''}
+                        </div>
+                        <div class="debug-device-status">
+                            <div class="debug-status-dot ${statusDotClass}"></div>
+                            <span class="debug-status-text">${statusText}</span>
+                        </div>
+                    </div>
+                    <div class="debug-device-info">
+                        <div class="debug-info-row">
+                            <span class="debug-info-label">${texts.macAddress}</span>
+                            <span class="debug-info-value">${macAddress}</span>
+                        </div>
+                        <div class="debug-info-row">
+                            <span class="debug-info-label">${texts.maxCurrent}</span>
+                            <span class="debug-info-value">${maxCurrent}</span>
+                        </div>
+                        <div class="debug-info-row">
+                            <span class="debug-info-label">${texts.actualCurrent}</span>
+                            <span class="debug-info-value ${isBusy ? 'charging' : ''}">${actualCurrent}</span>
+                        </div>
+                        ${isBusy ? `
+                        <div class="debug-info-row">
+                            <span class="debug-info-label">${texts.status}</span>
+                            <span class="debug-info-value charging">${texts.charging}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                deviceCards.appendChild(card);
+            });
+        }
+
+        // 初始化标签切换
+        function initDebugTabs() {
+            const tabs = document.querySelectorAll('.debug-tab');
+            const panels = document.querySelectorAll('.debug-panel');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // 移除所有active状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panels.forEach(p => p.classList.remove('active'));
+
+                    // 添加当前active状态
+                    this.classList.add('active');
+                    const targetPanel = document.getElementById(targetTab + 'Panel');
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                    }
+
+                    // 如果切换到设备信息标签，重新渲染设备列表
+                    if (targetTab === 'device') {
+                        renderDebugDevices();
+                    }
+                });
+            });
+        }
+
+        // 更新调试抽屉语言
+        function updateDebugDrawerLanguage() {
+            const debugDrawer = document.getElementById('debugDrawer');
+            if (!debugDrawer) return; // 如果抽屉还未初始化，直接返回
+
+            const savedLanguage = localStorage.getItem('preferredLanguage') || 'English';
+            const texts = i18n[savedLanguage];
+
+            // 更新抽屉标题
+            const debugDrawerTitle = debugDrawer.querySelector('.drawer-title');
+            if (debugDrawerTitle) debugDrawerTitle.textContent = texts.debugTitle;
+
+            // 更新标签文本
+            const debugTabs = debugDrawer.querySelectorAll('.debug-tab');
+            if (debugTabs[0]) debugTabs[0].textContent = texts.meterParams;
+            if (debugTabs[1]) debugTabs[1].textContent = texts.deviceInfo;
+
+            // 更新参数标签
+            const paramLabels = debugDrawer.querySelectorAll('.param-label');
+            if (paramLabels[0]) paramLabels[0].textContent = texts.voltageCoef;
+            if (paramLabels[1]) paramLabels[1].textContent = texts.currentCoef;
+            if (paramLabels[2]) paramLabels[2].textContent = texts.powerCoef;
+            if (paramLabels[3]) paramLabels[3].textContent = texts.energyCoef;
+            if (paramLabels[4]) paramLabels[4].textContent = texts.frequencyCoef;
+
+            // 更新保存按钮
+            const saveBtn = document.getElementById('saveMeterParams');
+            if (saveBtn) saveBtn.textContent = texts.saveParams;
+
+            // 重新渲染设备卡片
+            if (debugDrawer.classList.contains('active')) {
+                const deviceCardsContainer = document.getElementById('deviceCards');
+                if (deviceCardsContainer) {
+                    renderDebugDevices();
+                }
+            }
+        }
 
         // 初始化页面
         console.log('页面初始化，当前设备列表：', savedChargers);
