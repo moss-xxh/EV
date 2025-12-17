@@ -552,9 +552,11 @@
             '中文': {
                 pageTitle: '设备信息',
                 deviceName: '设备名称',
+                devicePrefix: '设备',
                 online: '在线',
                 offline: '离线',
                 inUse: '使用中',
+                deviceSN: '设备SN',
                 macAddress: 'MAC地址',
                 maxCurrent: '限制电流',
                 actualCurrent: '实际电流',
@@ -570,9 +572,11 @@
             '繁體中文': {
                 pageTitle: '設備信息',
                 deviceName: '設備名稱',
+                devicePrefix: '設備',
                 online: '在線',
                 offline: '離線',
                 inUse: '使用中',
+                deviceSN: '設備SN',
                 macAddress: 'MAC地址',
                 maxCurrent: '限制電流',
                 actualCurrent: '實際電流',
@@ -588,9 +592,11 @@
             'English': {
                 pageTitle: 'Device Information',
                 deviceName: 'Device Name',
+                devicePrefix: 'Device',
                 online: 'Online',
                 offline: 'Offline',
                 inUse: 'In Use',
+                deviceSN: 'Device SN',
                 macAddress: 'MAC Address',
                 maxCurrent: 'Max Current',
                 actualCurrent: 'Actual Current',
@@ -659,7 +665,7 @@
                     <div class="device-card">
                         <div class="device-header">
                             <div class="device-name-row">
-                                <div class="device-name">${charger.name || charger.id}</div>
+                                <div class="device-name">${charger.name && charger.name !== charger.id ? charger.name : texts.devicePrefix + (index + 1)}</div>
                             </div>
                             <div class="device-status-group">
                                 <div class="device-status ${isOnline ? 'online' : 'offline'}">
@@ -669,6 +675,10 @@
                             </div>
                         </div>
                         <div class="device-info-list">
+                            <div class="device-info-item">
+                                <span class="info-label">${texts.deviceSN}</span>
+                                <span class="info-value">${charger.id}</span>
+                            </div>
                             <div class="device-info-item">
                                 <span class="info-label">${texts.macAddress}</span>
                                 <span class="info-value">${macAddress}</span>
